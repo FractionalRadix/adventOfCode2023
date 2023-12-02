@@ -2,7 +2,52 @@ import kotlin.io.path.Path
 import kotlin.io.path.readLines
 
 fun main(args: Array<String>) {
-    solveDay01()
+    //solveDay01()
+    solveDay02()
+}
+
+fun solveDay02() {
+    val firstInputAsStrings = Path("""src/main/resources/inputFiles/AoCDay02.txt""")
+        .readLines()
+        .filter { str -> str.isNotEmpty() }
+
+    var sum = 0
+    val maxRed = 12
+    val maxGreen = 13
+    val maxBlue = 14
+    for (i in 1 .. firstInputAsStrings.size) {
+        var possible = true
+        val curStr = firstInputAsStrings[i - 1]
+        var stripped = curStr.dropWhile { ch -> ch != ':' }
+        stripped = stripped.substring(1)
+        //println(stripped)
+        val draws = stripped.split(';')
+        //draws.forEach { draw -> println(draw) }
+        for (draw in draws) {
+            val cubes = draw
+                .split(',')
+            //cubes.forEach { cube -> println(cube) }
+            // All the parsing that's left to do, is to determine the amount and the color...
+            for (cube in cubes) {
+                val parsed = cube.trim().split(' ')
+                val nrOfCubes = parsed[0].toInt()
+                val color = parsed[1]
+                //println("nr of cubes: $nrOfCubes color: $color")
+                if (color == "red" && nrOfCubes > maxRed)
+                    possible = false
+                if (color == "green" && nrOfCubes > maxGreen)
+                    possible = false
+                if (color == "blue" && nrOfCubes > maxBlue)
+                    possible = false
+            }
+        }
+
+        if (possible) {
+            println("game $i is possible")
+            sum += i
+        }
+    }
+    println("Sum of possible games: $sum")
 }
 
 fun solveDay01() {
