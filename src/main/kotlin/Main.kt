@@ -4,32 +4,7 @@ import kotlin.io.path.readLines
 fun main(args: Array<String>) {
     //solveDay01()
     //solveDay02() // 2268, 63542
-    solveDay03() // 530495
-}
-
-fun solveDay03() {
-    val firstInputAsStrings = Path("""src/main/resources/inputFiles/AoCDay03.txt""")
-        .readLines()
-        .filter { str -> str.isNotEmpty() }
-
-    val map = buildMap(firstInputAsStrings)
-
-    val solutionPart1 = solveDay03Part1(firstInputAsStrings, map)
-    println("The sum is $solutionPart1")
-
-    val solutionPart2 = solveDay03Part2(firstInputAsStrings)
-}
-
-fun solveDay03Part2(inputStrings: List<String>) {
-    val map = buildMap(inputStrings)
-
-    for (rowNr in 0..< inputStrings.size) {
-        val row = inputStrings[rowNr]
-        val numbers = findNumbersInString(row)
-
-        TODO()
-
-    }
+    solveDay03() // 530495, 80253814
 }
 
 /**
@@ -49,19 +24,81 @@ private fun buildMap(strings: List<String>): MutableMap<Coor, Char> {
     return map
 }
 
+fun solveDay03() {
+    val firstInputAsStrings = Path("""src/main/resources/inputFiles/AoCDay03.txt""")
+        .readLines()
+        .filter { str -> str.isNotEmpty() }
+
+    val solutionPart1 = solveDay03Part1(firstInputAsStrings)
+    println("The sum of part numbers is $solutionPart1 .")
+
+    val solutionPart2 = solveDay03Part2(firstInputAsStrings)
+    println("The sum of gear ratios is $solutionPart2 .")
+}
+
+fun solveDay03Part2(inputStrings: List<String>): Int {
+
+    data class Component(
+        val value: Int,
+        val startOfNumber: Coor,
+        val endOfNumber: Coor,
+        val environment: List<Coor>
+    )
+    val componentsNearGear = mutableListOf<Component>()
+
+    val map = buildMap(inputStrings)
+
+    fun containsStar(environment: List<Coor>) =
+        environment
+            .filter { key -> map.containsKey(key) }
+            .any { key -> map[key] == '*' }
+
+    for (rowNr in 0..< inputStrings.size) {
+        val row = inputStrings[rowNr]
+        val numbers = findNumbersInString(row)
+        numbers.forEach {
+            val startOfNumber = Coor(rowNr, it.first)
+            val endOfNumber = Coor(rowNr, it.second)
+            val environment = surroundingCoordinates(startOfNumber, endOfNumber)
+            if (containsStar(environment)) {
+                val number = row
+                    .substring(IntRange(it.first, it.second))
+                    .toInt()
+                componentsNearGear.add(Component(number, startOfNumber, endOfNumber, environment))
+            }
+        }
+    }
+
+    // For every gear (star symbol), determine if it is in exactly TWO environments.
+    var sum = 0
+    map.forEach {
+        if (it.value == '*') {
+            val components = componentsNearGear
+                .filter { comp -> comp.environment.contains(it.key) }
+            if (components.size == 2) {
+                val gearRatio = components[0].value * components[1].value
+                sum += gearRatio
+            }
+        }
+    }
+
+    return sum
+}
+
 private fun solveDay03Part1(
     inputStrings: List<String>,
-    map: MutableMap<Coor, Char>,
+    //map: MutableMap<Coor, Char>,
 ): Int {
+    val map = buildMap(inputStrings)
     var sum = 0
     for (rowNr in inputStrings.indices) {
         val row = inputStrings[rowNr]
         val numbers = findNumbersInString(row)
 
         numbers.forEach { it ->
-            val start = Coor(rowNr, it.first)
-            val end = Coor(rowNr, it.second)
-            val neighbours = surroundingCoordinates(start, end)
+            val startOfNumber = Coor(rowNr, it.first)
+            val endOfNumber = Coor(rowNr, it.second)
+            val neighbours = surroundingCoordinates(startOfNumber, endOfNumber)
             val touched = neighbours
                 .filter { coor -> map.containsKey(coor) }
                 .any { coor -> map[coor] != '.' }
