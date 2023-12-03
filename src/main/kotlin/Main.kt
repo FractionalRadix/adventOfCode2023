@@ -3,8 +3,118 @@ import kotlin.io.path.readLines
 
 fun main(args: Array<String>) {
     //solveDay01()
-    solveDay02() // 2268, 63542
+    //solveDay02() // 2268, 63542
+    solveDay03() // 530495
 }
+
+fun solveDay03() {
+    val firstInputAsStrings = Path("""src/main/resources/inputFiles/AoCDay03.txt""")
+        .readLines()
+        .filter { str -> str.isNotEmpty() }
+
+    val map = mutableMapOf<Coor, Char>()
+    for (rowIdx in firstInputAsStrings.indices) {
+        val row = firstInputAsStrings[rowIdx]
+        for (colIdx in row.indices) {
+            val char = row[colIdx]
+            map[Coor(rowIdx, colIdx)] = char
+        }
+    }
+
+    var sum = 0
+    var rowNr = 0
+    while (rowNr < firstInputAsStrings.size) {
+        val row = firstInputAsStrings[rowNr]
+        val numbers = findNumbersInString(row)
+
+        numbers.forEach { it ->
+            val start = Coor(rowNr, it.first)
+            val end = Coor(rowNr, it.second)
+            val neighbours = surroundingCoordinates(start, end)
+            val touched = neighbours
+                .filter { coor -> map.containsKey(coor) }
+                .any { coor -> map[coor] != '.' }
+            if (touched) {
+                val number = row.substring(IntRange(it.first, it.second))
+                println(number)
+                val result = number.toInt()
+                sum += result
+            }
+        }
+        rowNr++
+    }
+
+    println("Sum of touched numbers: $sum")
+}
+
+/**
+ * Given a rectangular area in a grid, give the coordinates that <em>directly surround<em> that area.
+ * @param topLeft Top left coordinate of the rectangle. In other words, the point with the lowest row- and column-indices.
+ * @param bottomRight Bottom right coordinate of the rectangle. In other words, the point with highest row- and column-indices.
+ * @return A list of all the points that touch the rectangle (i.e. are directly near it) but are not part of it.
+ */
+fun surroundingCoordinates(topLeft: Coor, bottomRight: Coor): List<Coor> {
+    val result = mutableListOf<Coor>()
+
+    val top = topLeft.row
+    val aboveTop = top - 1
+    val beforeLeft = topLeft.col - 1
+    val afterRight = bottomRight.col + 1
+    val bottom = bottomRight.row
+    val belowBottom = bottom + 1
+
+    // The rows above and below the rectangle.
+    for (colIdx in beforeLeft .. afterRight ) {
+        result.add(Coor(aboveTop, colIdx))
+        result.add(Coor(belowBottom, colIdx))
+    }
+
+    // The columns to the left and right.
+    // Note that the corner points have already been added, when we added the rows.
+    for(rowIdx in top .. bottom ) {
+        result.add(Coor(rowIdx, beforeLeft))
+        result.add(Coor(rowIdx, afterRight))
+    }
+
+    return result
+}
+
+/**
+ * Given a string, find the (positive natural) numbers in the string, including their start- and end-positions.
+ * @param str A String that may contain one or more positive natural numbers.
+ * @return A list of start- and end-indices, where each pair corresponds to a number inside the string.
+ */
+fun findNumbersInString(str: String): List<Pair<Int,Int>> {
+    val numberSubstrings = mutableListOf<Pair<Int,Int>>()
+
+    var parsingNumber = false
+    var startPos: Int? = 0
+    var i = 0
+    while (i < str.length) {
+        val ch = str[i]
+        if (ch.isDigit() && !parsingNumber) {
+            parsingNumber = true
+            startPos = i
+        }
+        if (!ch.isDigit()) {
+            if (parsingNumber) {
+                val endPos = i - 1
+                numberSubstrings.add(Pair(startPos!!, endPos))
+                startPos = null
+            }
+            parsingNumber = false
+        }
+        i++
+    }
+    if (parsingNumber) {
+        val endPos = str.length - 1
+        numberSubstrings.add(Pair(startPos!!, endPos))
+    }
+
+    return numberSubstrings
+}
+
+data class Coor(val row: Int, val col: Int)
 
 
 fun solveDay02() {
