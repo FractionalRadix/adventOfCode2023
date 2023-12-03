@@ -12,19 +12,50 @@ fun solveDay03() {
         .readLines()
         .filter { str -> str.isNotEmpty() }
 
+    val map = buildMap(firstInputAsStrings)
+
+    val solutionPart1 = solveDay03Part1(firstInputAsStrings, map)
+    println("The sum is $solutionPart1")
+
+    val solutionPart2 = solveDay03Part2(firstInputAsStrings)
+}
+
+fun solveDay03Part2(inputStrings: List<String>) {
+    val map = buildMap(inputStrings)
+
+    for (rowNr in 0..< inputStrings.size) {
+        val row = inputStrings[rowNr]
+        val numbers = findNumbersInString(row)
+
+        TODO()
+
+    }
+}
+
+/**
+ * Turn an array of strings into a mapping: (row,column) -> character
+ * @param strings A list of strings
+ * @return A mapping from (row, column) coordinates to characters.
+ */
+private fun buildMap(strings: List<String>): MutableMap<Coor, Char> {
     val map = mutableMapOf<Coor, Char>()
-    for (rowIdx in firstInputAsStrings.indices) {
-        val row = firstInputAsStrings[rowIdx]
+    for (rowIdx in strings.indices) {
+        val row = strings[rowIdx]
         for (colIdx in row.indices) {
             val char = row[colIdx]
             map[Coor(rowIdx, colIdx)] = char
         }
     }
+    return map
+}
 
+private fun solveDay03Part1(
+    inputStrings: List<String>,
+    map: MutableMap<Coor, Char>,
+): Int {
     var sum = 0
-    var rowNr = 0
-    while (rowNr < firstInputAsStrings.size) {
-        val row = firstInputAsStrings[rowNr]
+    for (rowNr in inputStrings.indices) {
+        val row = inputStrings[rowNr]
         val numbers = findNumbersInString(row)
 
         numbers.forEach { it ->
@@ -36,15 +67,12 @@ fun solveDay03() {
                 .any { coor -> map[coor] != '.' }
             if (touched) {
                 val number = row.substring(IntRange(it.first, it.second))
-                println(number)
                 val result = number.toInt()
                 sum += result
             }
         }
-        rowNr++
     }
-
-    println("Sum of touched numbers: $sum")
+    return sum
 }
 
 /**
