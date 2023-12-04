@@ -4,7 +4,60 @@ import kotlin.io.path.readLines
 fun main(args: Array<String>) {
     //solveDay01()
     //solveDay02() // 2268, 63542
-    solveDay03() // 530495, 80253814
+    //solveDay03() // 530495, 80253814
+    solveDay04() // 22674
+}
+
+fun solveDay04() {
+    val firstInputAsStrings = Path("""src/main/resources/inputFiles/AoCDay04.txt""")
+        .readLines()
+        .filter { str -> str.isNotEmpty() }
+
+    var sum = 0
+    var cardNum = 1 // Ideally we'd take this from the input string as well, instead of initializing it this way...
+    firstInputAsStrings.forEach {
+        val cardNameNumbersSplit = it.split(":")
+        val numbersSplit = cardNameNumbersSplit[1].split("|")
+        val numbers = parseListOfInts(numbersSplit[0])
+        val winningNumbers = parseListOfInts(numbersSplit[1])
+        val card = Card(cardNum, numbers, winningNumbers)
+        cardNum++
+        sum += card.value()
+    }
+    println("The sum of winning values is: $sum")
+}
+
+private fun parseListOfInts(str: String): List<Int> {
+    val numbers = str.split(" ")
+    val numbersList = mutableListOf<Int>()
+    numbers.forEach {
+            numString ->
+        if (numString.isNotEmpty() && numString.isNotBlank()) {
+            val number = numString.toInt()
+            numbersList.add(number)
+        }
+    }
+    return numbersList
+}
+
+class Card(val nr: Int, private val numbers: List<Int>, private val winningNumbers: List<Int>) {
+    fun value(): Int {
+        val nrOfWinningNumbers = numbers.intersect(winningNumbers).size
+        return if (nrOfWinningNumbers == 0) {
+            0
+        } else {
+            pow(2, nrOfWinningNumbers - 1)
+        }
+    }
+}
+
+// Kotlin doesn't seem to have a built-in pow function for integers, only for Doubles...
+fun pow(base: Int, power: Int): Int {
+    var result = 1
+    for (i in 1 .. power) {
+        result *= base
+    }
+    return result
 }
 
 /**
