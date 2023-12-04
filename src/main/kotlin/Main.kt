@@ -27,6 +27,16 @@ fun solveDay04() {
     println("The sum of winning values is: $sum")
 }
 
+private fun generate(allCards: List<Card>, seedCards: List<Card>): List<Card> {
+    val nextGeneration = mutableListOf<Card>()
+    for (seedCard in seedCards) {
+        val nrOfCardsWon = seedCard.getNrOfWinningNumbers()
+        val generatedCardsIds = IntRange(seedCard.nr + 1, seedCard.nr + nrOfCardsWon)
+
+
+    }
+}
+
 private fun parseListOfInts(str: String): List<Int> {
     val numbers = str.split(" ")
     val numbersList = mutableListOf<Int>()
@@ -42,13 +52,15 @@ private fun parseListOfInts(str: String): List<Int> {
 
 class Card(val nr: Int, private val numbers: List<Int>, private val winningNumbers: List<Int>) {
     fun value(): Int {
-        val nrOfWinningNumbers = numbers.intersect(winningNumbers).size
+        val nrOfWinningNumbers = getNrOfWinningNumbers()
         return if (nrOfWinningNumbers == 0) {
             0
         } else {
             pow(2, nrOfWinningNumbers - 1)
         }
     }
+
+    fun getNrOfWinningNumbers() = numbers.intersect(winningNumbers).size
 }
 
 // Kotlin doesn't seem to have a built-in pow function for integers, only for Doubles...
