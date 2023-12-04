@@ -5,13 +5,15 @@ fun main(args: Array<String>) {
     //solveDay01()
     //solveDay02() // 2268, 63542
     //solveDay03() // 530495, 80253814
-    solveDay04() // 22674
+    solveDay04() // 22674, 5747443
 }
 
 fun solveDay04() {
     val firstInputAsStrings = Path("""src/main/resources/inputFiles/AoCDay04.txt""")
         .readLines()
         .filter { str -> str.isNotEmpty() }
+
+    val allCards = mutableListOf<Card>()
 
     var sum = 0
     var cardNum = 1 // Ideally we'd take this from the input string as well, instead of initializing it this way...
@@ -23,19 +25,57 @@ fun solveDay04() {
         val card = Card(cardNum, numbers, winningNumbers)
         cardNum++
         sum += card.value()
+
+        allCards.add(card)
     }
     println("The sum of winning values is: $sum")
+
+    var total = 0
+    val cards = mutableListOf<Card>()
+    allCards.forEach { cards.add(it) }
+    total += cards.size
+
+    do {
+        val currentCard = cards.firstOrNull()
+        if (currentCard == null) {
+            //TODO?+
+        } else {
+            val win = currentCard.getNrOfWinningNumbers()
+            for (i in currentCard.nr + 1..currentCard.nr + win) {
+                cards.add(allCards.first { it.nr == i })
+                total++
+            }
+            cards.remove(currentCard)
+        }
+        println(cards.size)
+    } while (cards.isNotEmpty())
+    println(total)
+
 }
 
-private fun generate(allCards: List<Card>, seedCards: List<Card>): List<Card> {
-    val nextGeneration = mutableListOf<Card>()
-    for (seedCard in seedCards) {
-        val nrOfCardsWon = seedCard.getNrOfWinningNumbers()
-        val generatedCardsIds = IntRange(seedCard.nr + 1, seedCard.nr + nrOfCardsWon)
+//TODO!+ Working on a less naive solution for day 4, part 2.
+private fun day4part2(allCards: List<Card>) {
+    val firstMap = mutableMapOf<Card, Int>() // map card nrs to amounts
 
+    allCards.forEach { firstMap[it] = 1 }
 
+    val nextMap = mutableMapOf<Card, Int>()
+    for (card in firstMap.keys) {
+        val nrOfWinningNumbers = card.getNrOfWinningNumbers()
+        for (i in card.nr + 1 .. card.nr + nrOfWinningNumbers) {
+            val newCard = allCards.first { it.nr == i }
+            if (nextMap.containsKey(newCard)) {
+                nextMap[newCard] = nextMap[newCard]!! + 1
+            } else {
+                nextMap[newCard] = 1
+            }
+        }
     }
+
+    TODO()
+
 }
+
 
 private fun parseListOfInts(str: String): List<Int> {
     val numbers = str.split(" ")
