@@ -5,7 +5,78 @@ fun main(args: Array<String>) {
     //solveDay01()
     //solveDay02() // 2268, 63542
     //solveDay03() // 530495, 80253814
-    solveDay04() // 22674, 5747443
+    //solveDay04() // 22674, 5747443
+    solveDay05()
+}
+
+fun solveDay05() {
+    val input = Path("""src/main/resources/inputFiles/AoCDay05.txt""")
+        .readLines()
+
+    val seedsStr = input[0].split(":")
+    println(seedsStr)
+    val seeds = parseListOfLongs(seedsStr[1])
+
+    println(seeds)
+
+    val transformers = mutableListOf<Transformer>()
+    var transformer: Transformer? = null
+    for (i in 1..<input.size) {
+        if (input[i].isEmpty())
+            continue
+        if (input[i].endsWith("map:")) {
+            if (transformer != null) {
+                transformers.add(transformer)
+            }
+            transformer = Transformer()
+        } else {
+            val longs = parseListOfLongs(input[i])
+            val range = TransformRange(longs[0], longs[1], longs[2])
+            transformer?.ranges?.add(range)
+        }
+    }
+    transformers.add(transformer!!)
+
+    val soils = mutableListOf<Long>()
+    for (seed in seeds) {
+        var value = seed
+        println("seed: $value")
+        for (transformer in transformers) {
+            value = transformer.transform(value)
+            print(" -> $value ")
+        }
+        println(" -> $value")
+        soils.add(value)
+    }
+
+    println("The lowest soil nr is ${soils.min()}")
+}
+
+data class TransformRange(
+    val destination: Long,
+    val source: Long,
+    val range: Long,
+)
+
+class Transformer() {
+    val ranges = mutableListOf<TransformRange>()
+
+    fun transform(input: Long): Long {
+        for (range in ranges) {
+            if (input >= range.source && input < range.source + range.range) {
+                val delta = input - range.source
+                return range.destination + delta
+            }
+        }
+        return input
+    }
+
+    fun print( ) {
+        println()
+        for (range in ranges) {
+            println("${range.destination} ${range.source} ${range.range}")
+        }
+    }
 }
 
 fun solveDay04() {
@@ -84,6 +155,19 @@ private fun parseListOfInts(str: String): List<Int> {
             numString ->
         if (numString.isNotEmpty() && numString.isNotBlank()) {
             val number = numString.toInt()
+            numbersList.add(number)
+        }
+    }
+    return numbersList
+}
+
+private fun parseListOfLongs(str: String): List<Long> {
+    val numbers = str.split(" ")
+    val numbersList = mutableListOf<Long>()
+    numbers.forEach {
+            numString ->
+        if (numString.isNotEmpty() && numString.isNotBlank()) {
+            val number = numString.toLong()
             numbersList.add(number)
         }
     }
