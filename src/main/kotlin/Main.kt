@@ -1,4 +1,4 @@
-import com.cormontia.adventOfCode.year2023.com.cormontia.adventOfCode.year2023.utils.*
+import com.cormontia.adventOfCode.year2023.utils.parseListOfLongs
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
 

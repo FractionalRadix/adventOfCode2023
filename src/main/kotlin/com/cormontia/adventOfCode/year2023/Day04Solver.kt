@@ -1,6 +1,6 @@
 package com.cormontia.adventOfCode.year2023
 
-import com.cormontia.adventOfCode.year2023.com.cormontia.adventOfCode.year2023.utils.parseListOfInts
+import com.cormontia.adventOfCode.year2023.utils.parseListOfInts
 import com.cormontia.adventOfCode.year2023.utils.pow
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
