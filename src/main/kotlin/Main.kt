@@ -8,7 +8,7 @@ fun main(args: Array<String>) {
     //Day05Solver().solve() // ...under construction...
     //Day06Solver().solve() // 138915, 27340847
     //Day07Solver().solve() // 245794640, 247899149
-    Day08Solver().solve() // Under construction.
+    Day08Solver().solve() // 20569, Under construction.
 
 }
 
