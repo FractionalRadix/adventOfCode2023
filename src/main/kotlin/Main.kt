@@ -11,7 +11,7 @@ fun main(args: Array<String>) {
 }
 
 fun solveDay05() {
-    val input = Path("""src/main/resources/inputFiles/AoCDay05.txt""")
+    val input = Path("""src/main/resources/inputFiles/AoCDay05_sample1.txt""")
         .readLines()
 
     val seedsStr = input[0].split(":")
@@ -20,6 +20,65 @@ fun solveDay05() {
 
     println(seeds)
 
+    val transformers = parseTransformationFunctions(input)
+
+    val soils = mutableListOf<Long>()
+    for (seed in seeds) {
+        var value = seed
+        println("seed: $value")
+        for (transformer in transformers) {
+            value = transformer.transform(value)
+            print(" -> $value ")
+        }
+        println(" -> $value")
+        soils.add(value)
+    }
+
+    println("The lowest soil nr is ${soils.min()}")
+
+
+    var sourceRanges = mutableListOf<LongRange>()
+    for (i in seeds.indices step 2) {
+        sourceRanges.add(LongRange(seeds[i], seeds[i] + seeds[i+1] - 1))
+    }
+    println(sourceRanges)
+
+    // First, the naive solution:
+    val finalMapping = mutableMapOf<Long,Long>()
+    for (sourceRange in sourceRanges) {
+        for (source in sourceRange) {
+            var tmp = source
+            for (mapper in transformers) {
+                tmp = mapper.transform(tmp)
+            }
+            finalMapping[source] = tmp
+        }
+    }
+    val answer = finalMapping.map { it.value }.min()
+    println("Lowest location number: $answer")
+
+    /*
+    var targetRanges = mutableListOf<LongRange>()
+    //TODO!+
+    for (mapper in transformers) {
+        // Map seed-to-soil, or soil-to-fertilizer, or fertilizer-to-water, etc.
+
+        // Transform our source ranges into target ranges.
+        for (sourceRange in sourceRanges) {
+            //TODO!+ split the sourceRange into several targetRanges, as determined by the mappings in mapper.
+
+        }
+
+        // Ready for the next mapping...
+        //TODO!+ Keep track of the input values as well!
+        sourceRanges = targetRanges
+        targetRanges.clear()
+    }
+     */
+
+}
+
+private fun parseTransformationFunctions(input: List<String>): MutableList<Transformer> {
     val transformers = mutableListOf<Transformer>()
     var transformer: Transformer? = null
     for (i in 1..<input.size) {
@@ -37,23 +96,7 @@ fun solveDay05() {
         }
     }
     transformers.add(transformer!!)
-
-    val soils = mutableListOf<Long>()
-    for (seed in seeds) {
-        var value = seed
-        println("seed: $value")
-        for (transformer in transformers) {
-            value = transformer.transform(value)
-            print(" -> $value ")
-        }
-        println(" -> $value")
-        soils.add(value)
-    }
-
-    println("The lowest soil nr is ${soils.min()}")
-
-
-    var seedRanges = mutableListOf<LongRange>()
+    return transformers
 }
 
 data class TransformRange(
@@ -62,6 +105,9 @@ data class TransformRange(
     val range: Long,
 )
 
+/**
+ * A set of mappings, from seed-to-soil, or soil-to-fertilizer, or fertilizer-to-water, etc.
+ */
 class Transformer() {
     val ranges = mutableListOf<TransformRange>()
 
