@@ -19,23 +19,53 @@ class Day08Solver {
 
         val nrOfSteps = solvePart1(network, instructions)
         println("Nr of steps to reach ZZZ: $nrOfSteps")
+        val nrOfStepsPart2 = solvePart2(network, instructions)
+        println("Nr of steps to reach all Z-ending nodes from all A-ending notes simultaneously: $nrOfStepsPart2")
     }
 
-    fun solvePart1(network: Map<String, Pair<String, String>>, instructions: String): Int {
-        var ip = 0 // instruction pointer
+    private fun solvePart1(network: Map<String, Pair<String, String>>, instructions: String): Int {
         var pos = "AAA"
         var count = 0
 
         while (pos != "ZZZ") {
             val next = network[pos]
-            val actualIp = ip % instructions.length
-            if (instructions[actualIp] == 'L') {
-                pos = next!!.first
+            val instructionPointer = count % instructions.length
+            pos = if (instructions[instructionPointer] == 'L') {
+                next!!.first
             } else /* instructions[actualIp] == 'R' */ {
-                pos = next!!.second
+                next!!.second
             }
-            println("New position: $pos")
-            ip++
+            count++
+        }
+
+        return count
+    }
+
+    //TODO!~  This is a naive solution that takes a lot of time.
+    // What we should be doing: determine for each individual starting point, at which points it encounters a node that ends with 'Z'.
+    // Then find a least common multiple, or something like that...
+    // Note, however, that every starting point will have multiple endpoints...
+    private fun solvePart2(network: Map<String, Pair<String, String>>, instructions: String): Int {
+        var positions = network.keys.filter { it.endsWith('A') }
+        var count = 0
+
+        while (!positions.all { it.endsWith('Z') }) {
+            //println("New round: $count")
+            val newPositions = mutableListOf<String>()
+
+            for (src in positions) {
+                val next = network[src]
+                val instructionPointer = count % instructions.length
+                val pos = if (instructions[instructionPointer] == 'L') {
+                    next!!.first
+                } else /* instructions[actualIp] == 'R' */ {
+                    next!!.second
+                }
+                newPositions.add(pos)
+                //println("...$src -> $pos")
+            }
+            positions = newPositions
+
             count++
         }
 
