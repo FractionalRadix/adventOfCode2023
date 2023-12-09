@@ -43,8 +43,9 @@ class Day08Solver {
 
     //TODO!~  This is a naive solution that takes a lot of time.
     // What we should be doing: determine for each individual starting point, at which points it encounters a node that ends with 'Z'.
-    // Then find a least common multiple, or something like that...
-    // Note, however, that every starting point will have multiple endpoints...
+    // For every starting point, there comes a point where this repeats.
+    // So, for every starting point, we create a lazy list that repeats these values forever.
+    // Then find the first point that all infinite lazy lists have in common.
     private fun solvePart2(network: Map<String, Pair<String, String>>, instructions: String): Int {
         var positions = network.keys.filter { it.endsWith('A') }
         var count = 0
