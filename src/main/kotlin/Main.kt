@@ -1,4 +1,3 @@
-import com.cormontia.adventOfCode.year2023.Day07Solver
 import com.cormontia.adventOfCode.year2023.Day08Solver
 
 fun main(args: Array<String>) {
