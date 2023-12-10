@@ -1,5 +1,6 @@
 package com.cormontia.adventOfCode.year2023
 
+import com.cormontia.adventOfCode.year2023.utils.lcm
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
 
@@ -17,10 +18,12 @@ class Day08Solver {
             network[key] = Pair(valueLeft, valueRight)
         }
 
-        val nrOfSteps = solvePart1(network, instructions)
-        println("Nr of steps to reach ZZZ: $nrOfSteps")
+        //val nrOfSteps = solvePart1(network, instructions)
+        //println("Nr of steps to reach ZZZ: $nrOfSteps")
         val nrOfStepsPart2 = solvePart2(network, instructions)
         println("Nr of steps to reach all Z-ending nodes from all A-ending notes simultaneously: $nrOfStepsPart2")
+
+        // WRONG: 42733842121442 (too high).
     }
 
     private fun solvePart1(network: Map<String, Pair<String, String>>, instructions: String): Int {
@@ -46,12 +49,11 @@ class Day08Solver {
     // For every starting point, there comes a point where this repeats.
     // So, for every starting point, we create a lazy list that repeats these values forever.
     // Then find the first point that all infinite lazy lists have in common.
-    private fun solvePart2(network: Map<String, Pair<String, String>>, instructions: String): Int {
+    private fun solvePart2_naive(network: Map<String, Pair<String, String>>, instructions: String): Int {
         var positions = network.keys.filter { it.endsWith('A') }
         var count = 0
 
         while (!positions.all { it.endsWith('Z') }) {
-            //println("New round: $count")
             val newPositions = mutableListOf<String>()
 
             for (src in positions) {
@@ -63,7 +65,6 @@ class Day08Solver {
                     next!!.second
                 }
                 newPositions.add(pos)
-                //println("...$src -> $pos")
             }
             positions = newPositions
 
@@ -71,5 +72,57 @@ class Day08Solver {
         }
 
         return count
+    }
+
+    private fun solvePart2(network: Map<String, Pair<String, String>>, instructions: String): Long {
+        val startPositions = network.keys.filter { it.endsWith('A') }
+
+        val list = mutableListOf<Long>()
+        for (startPos in startPositions) {
+            println("Start position: $startPos")
+            val nrOfSteps = singleGhostPath(startPos, instructions, network)
+            println("...nr of steps: $nrOfSteps")
+            list.add(nrOfSteps)
+        }
+
+        val lcm = lcm(list.toLongArray())
+        return lcm
+    }
+
+    private fun singleGhostPath(start: String, instructions: String, network: Map<String, Pair<String, String>>): Long {
+        data class EndPosition(val count: Int, val pos: String, val instructionPointer: Int)
+        val endPositions = mutableListOf<EndPosition>()
+
+        println()
+        var count = 0
+        var pos = start
+        do {
+            val next = network[pos]
+            val instructionPointer = count % instructions.length
+            pos = if (instructions[instructionPointer] == 'L') {
+                next!!.first
+            } else /* instructions[actualIp] == 'R' */ {
+                next!!.second
+            }
+            count++
+            println("Step $count,  we move to $pos.")
+
+            if (pos.endsWith('Z')) {
+                if (endPositions.any { it.pos == pos && it.instructionPointer == instructionPointer }) {
+                    println("Loop! (nr of earlier end positions: ${endPositions.size}")
+                    break
+                } else {
+                    val endPos = EndPosition(count, pos, instructionPointer)
+                    println("New end position: $endPos")
+                    endPositions.add(endPos)
+                }
+            }
+        } while (true)
+
+        // Removing the steps before you got in a loop.
+        // (Full disclosure: this was a hint from the subreddit, and only works due to how the input is structured).
+        val beforeLoop = endPositions.minOf { it.count }
+
+        return (count - beforeLoop).toLong()
     }
 }
