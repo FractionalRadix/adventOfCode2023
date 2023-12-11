@@ -1,9 +1,9 @@
 package com.cormontia.adventOfCode.year2023
 
-import com.cormontia.adventOfCode.year2023.utils.Coor
-import com.cormontia.adventOfCode.year2023.utils.buildGridMap
-import com.cormontia.adventOfCode.year2023.utils.findNumbersInString
-import com.cormontia.adventOfCode.year2023.utils.surroundingCoordinates
+import utils.Coor
+import utils.buildGridMap
+import utils.findNumbersInString
+import utils.surroundingCoordinates
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
 

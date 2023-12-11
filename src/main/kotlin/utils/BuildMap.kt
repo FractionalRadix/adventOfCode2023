@@ -1,4 +1,4 @@
-package com.cormontia.adventOfCode.year2023.utils
+package utils
 
 /**
  * Turn an array of strings into a mapping: (row,column) -> character

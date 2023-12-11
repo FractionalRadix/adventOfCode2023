@@ -1,4 +1,4 @@
-package com.cormontia.adventOfCode.year2023.utils
+package utils
 
 /**
  * Given a rectangular area in a grid, give the coordinates that <em>directly surround<em> that area.

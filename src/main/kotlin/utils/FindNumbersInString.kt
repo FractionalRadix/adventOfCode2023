@@ -1,4 +1,4 @@
-package com.cormontia.adventOfCode.year2023.utils
+package utils
 
 /**
  * Given a string, find the (positive natural) numbers in the string, including their start- and end-positions.

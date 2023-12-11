@@ -1,4 +1,4 @@
-package com.cormontia.adventOfCode.year2023.utils
+package utils
 
 // Source: https://stackoverflow.com/a/4202114/812149
 // Converted to Kotlin by IntelliJ.

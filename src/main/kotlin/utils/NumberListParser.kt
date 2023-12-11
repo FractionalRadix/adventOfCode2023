@@ -1,4 +1,4 @@
-package com.cormontia.adventOfCode.year2023.utils
+package utils
 
 fun parseListOfInts(str: String): List<Int> {
     val numbers = str.split(" ")

@@ -1,12 +1,12 @@
 package com.cormontia.adventOfCode.year2023
 
-import com.cormontia.adventOfCode.year2023.utils.parseListOfLongs
+import utils.parseListOfLongs
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
 
 class Day09Solver {
     fun solve() {
-        val input = Path("""src/main/resources/inputFiles/AoCDay09_sample1.txt""")
+        val input = Path("""src/main/resources/inputFiles/AoCDay09.txt""")
             .readLines()
             .filter { it.isNotBlank() }
 
@@ -24,13 +24,18 @@ class Day09Solver {
         return sum
     }
 
-    fun determineNextValue(list: List<Long>): Long {
+    private fun determineNextValue(list: List<Long>): Long {
+        val lastElements = mutableListOf<Long>()
         var differences = list
-        var sum = 0L
         do{
+            lastElements.add(differences.last())
             differences = differences.zipWithNext().map { it.second - it.first }
         } while (differences.any { it != 0L })
 
-        TODO()
+        var next = 0L
+        for (elt in lastElements.reversed()) {
+            next += elt
+        }
+        return next
     }
 }

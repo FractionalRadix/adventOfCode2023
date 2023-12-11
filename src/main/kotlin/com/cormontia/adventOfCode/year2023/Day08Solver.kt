@@ -1,6 +1,6 @@
 package com.cormontia.adventOfCode.year2023
 
-import com.cormontia.adventOfCode.year2023.utils.lcm
+import utils.lcm
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
 
