@@ -1,4 +1,6 @@
-import com.cormontia.adventOfCode.year2023.Day08Solver
+//import com.cormontia.adventOfCode.year2023.Day09Solver
+//import com.cormontia.adventOfCode.year2023.Day10Solver
+import com.cormontia.adventOfCode.year2023.Day11Solver
 
 fun main(args: Array<String>) {
     //Day01Solver().solve() // 55447, 54706
@@ -8,7 +10,12 @@ fun main(args: Array<String>) {
     //Day05Solver().solve() // ...under construction...
     //Day06Solver().solve() // 138915, 27340847
     //Day07Solver().solve() // 245794640, 247899149
-    Day08Solver().solve() // 20569, 21366921060721
+    //Day08Solver().solve() // 20569, 21366921060721
+
+
+    //Day09Solver().solve()
+    //Day10Solver().solve()
+    Day11Solver().solve()
 
 }
 
