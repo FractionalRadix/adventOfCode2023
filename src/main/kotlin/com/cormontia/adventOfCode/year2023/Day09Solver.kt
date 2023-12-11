@@ -12,14 +12,24 @@ class Day09Solver {
 
         val inputLists = input.map { parseListOfLongs(it) }
 
-        val result1 = solve_part1(inputLists)
+        val result1 = solvePart1(inputLists)
         println("Sum of the next sequence values is: $result1")
+        val result2 = solvePart2(inputLists) // NOT: -2
+        println("Sum of the preceding sequence values is: $result2")
     }
 
-    fun solve_part1(inputLists: List<List<Long>>): Long {
+    private fun solvePart1(inputLists: List<List<Long>>): Long {
         var sum = 0L
         for (list in inputLists) {
             sum += determineNextValue(list)
+        }
+        return sum
+    }
+
+    private fun solvePart2(inputLists: List<List<Long>>): Long {
+        var sum = 0L
+        for (list in inputLists.reversed()) {
+            sum += determinePrevValue(list)
         }
         return sum
     }
@@ -37,5 +47,20 @@ class Day09Solver {
             next += elt
         }
         return next
+    }
+
+    private fun determinePrevValue(list: List<Long>): Long {
+        val firstElements = mutableListOf<Long>()
+        var differences = list
+        do{
+            firstElements.add(differences.first())
+            differences = differences.zipWithNext().map { it.second - it.first }
+        } while (differences.any { it != 0L })
+
+        var pred = 0L
+        for (elt in firstElements.reversed()) {
+            pred = elt - pred
+        }
+        return pred
     }
 }
