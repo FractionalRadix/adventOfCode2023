@@ -5,21 +5,21 @@ package com.cormontia.adventOfCode.year2023.utils
  * @param str A String that may contain one or more positive natural numbers.
  * @return A list of start- and end-indices, where each pair corresponds to a number inside the string.
  */
-fun findNumbersInString(str: String): List<Pair<Int,Int>> {
-    val numberSubstrings = mutableListOf<Pair<Int,Int>>()
+fun findNumbersInString(str: String): List<Pair<Long,Long>> {
+    val numberSubstrings = mutableListOf<Pair<Long,Long>>()
 
     var parsingNumber = false
-    var startPos: Int? = 0
+    var startPos: Long? = 0
     var i = 0
     while (i < str.length) {
         val ch = str[i]
         if (ch.isDigit() && !parsingNumber) {
             parsingNumber = true
-            startPos = i
+            startPos = i.toLong()
         }
         if (!ch.isDigit()) {
             if (parsingNumber) {
-                val endPos = i - 1
+                val endPos = i - 1L
                 numberSubstrings.add(Pair(startPos!!, endPos))
                 startPos = null
             }
@@ -28,7 +28,7 @@ fun findNumbersInString(str: String): List<Pair<Int,Int>> {
         i++
     }
     if (parsingNumber) {
-        val endPos = str.length - 1
+        val endPos = str.length - 1L
         numberSubstrings.add(Pair(startPos!!, endPos))
     }
 

@@ -18,8 +18,6 @@ class Day08Solver {
             network[key] = Pair(valueLeft, valueRight)
         }
 
-        //val nrOfSteps = solvePart1(network, instructions)
-        //println("Nr of steps to reach ZZZ: $nrOfSteps")
         val nrOfStepsPart2 = solvePart2(network, instructions)
         println("Nr of steps to reach all Z-ending nodes from all A-ending notes simultaneously: $nrOfStepsPart2")
 
@@ -79,9 +77,7 @@ class Day08Solver {
 
         val list = mutableListOf<Long>()
         for (startPos in startPositions) {
-            println("Start position: $startPos")
             val nrOfSteps = singleGhostPath(startPos, instructions, network)
-            println("...nr of steps: $nrOfSteps")
             list.add(nrOfSteps)
         }
 
@@ -105,15 +101,12 @@ class Day08Solver {
                 next!!.second
             }
             count++
-            println("Step $count,  we move to $pos.")
 
             if (pos.endsWith('Z')) {
                 if (endPositions.any { it.pos == pos && it.instructionPointer == instructionPointer }) {
-                    println("Loop! (nr of earlier end positions: ${endPositions.size}")
                     break
                 } else {
                     val endPos = EndPosition(count, pos, instructionPointer)
-                    println("New end position: $endPos")
                     endPositions.add(endPos)
                 }
             }

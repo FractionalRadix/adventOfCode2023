@@ -11,7 +11,7 @@ fun buildGridMap(strings: List<String>): MutableMap<Coor, Char> {
         val row = strings[rowIdx]
         for (colIdx in row.indices) {
             val char = row[colIdx]
-            map[Coor(rowIdx, colIdx)] = char
+            map[Coor(rowIdx.toLong(), colIdx.toLong())] = char
         }
     }
     return map

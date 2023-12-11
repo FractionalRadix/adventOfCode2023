@@ -37,8 +37,8 @@ class Day03Solver {
                 .filter { key -> map.containsKey(key) }
                 .any { key -> map[key] == '*' }
 
-        for (rowNr in 0..< inputStrings.size) {
-            val row = inputStrings[rowNr]
+        for (rowNr in 0L..< inputStrings.size) {
+            val row = inputStrings[rowNr.toInt()]
             val numbers = findNumbersInString(row)
             numbers.forEach {
                 val startOfNumber = Coor(rowNr, it.first)
@@ -46,7 +46,7 @@ class Day03Solver {
                 val environment = surroundingCoordinates(startOfNumber, endOfNumber)
                 if (containsStar(environment)) {
                     val number = row
-                        .substring(IntRange(it.first, it.second))
+                        .substring(IntRange(it.first.toInt(), it.second.toInt()))
                         .toInt()
                     componentsNearGear.add(Component(number, startOfNumber, endOfNumber, environment))
                 }
@@ -80,14 +80,14 @@ class Day03Solver {
             val numbers = findNumbersInString(row)
 
             numbers.forEach { it ->
-                val startOfNumber = Coor(rowNr, it.first)
-                val endOfNumber = Coor(rowNr, it.second)
+                val startOfNumber = Coor(rowNr.toLong(), it.first)
+                val endOfNumber = Coor(rowNr.toLong(), it.second)
                 val neighbours = surroundingCoordinates(startOfNumber, endOfNumber)
                 val touched = neighbours
                     .filter { coor -> map.containsKey(coor) }
                     .any { coor -> map[coor] != '.' }
                 if (touched) {
-                    val number = row.substring(IntRange(it.first, it.second))
+                    val number = row.substring(IntRange(it.first.toInt(), it.second.toInt()))
                     val result = number.toInt()
                     sum += result
                 }
