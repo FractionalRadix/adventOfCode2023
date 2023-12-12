@@ -1,7 +1,7 @@
 package utils
 
-fun parseListOfInts(str: String): List<Int> {
-    val numbers = str.split(" ")
+fun parseListOfInts(str: String, separator: String = " "): List<Int> {
+    val numbers = str.split(separator)
     val numbersList = mutableListOf<Int>()
     numbers.forEach {
             numString ->
@@ -13,8 +13,8 @@ fun parseListOfInts(str: String): List<Int> {
     return numbersList
 }
 
-fun parseListOfLongs(str: String): List<Long> {
-    val numbers = str.split(" ")
+fun parseListOfLongs(str: String, separator: String = " "): List<Long> {
+    val numbers = str.split(separator)
     val numbersList = mutableListOf<Long>()
     numbers.forEach {
             numString ->
@@ -24,7 +24,4 @@ fun parseListOfLongs(str: String): List<Long> {
         }
     }
     return numbersList
-}
-
-class NumberListParser {
 }

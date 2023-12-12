@@ -9,8 +9,9 @@ fun main(args: Array<String>) {
     //Day06Solver().solve() // 138915, 27340847
     //Day07Solver().solve() // 245794640, 247899149
     //Day08Solver().solve() // 20569, 21366921060721
-    Day09Solver().solve() // 1684566095 , ...under construction...
+    //Day09Solver().solve() // 1684566095 , ...under construction...
     //Day10Solver().solve()
     //Day11Solver().solve() // 9214785, 613686987427
+    Day12Solver().solve()
 }
 
