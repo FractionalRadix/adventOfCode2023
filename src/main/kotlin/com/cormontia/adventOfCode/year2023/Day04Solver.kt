@@ -1,6 +1,6 @@
 package com.cormontia.adventOfCode.year2023
 
-import utils.parseListOfInts
+import utils.parseListOfIntegers
 import utils.pow
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
@@ -18,8 +18,8 @@ class Day04Solver {
         firstInputAsStrings.forEach {
             val cardNameNumbersSplit = it.split(":")
             val numbersSplit = cardNameNumbersSplit[1].split("|")
-            val numbers = parseListOfInts(numbersSplit[0])
-            val winningNumbers = parseListOfInts(numbersSplit[1])
+            val numbers = parseListOfIntegers(numbersSplit[0])
+            val winningNumbers = parseListOfIntegers(numbersSplit[1])
             val card = Card(cardNum, numbers, winningNumbers)
             cardNum++
             sum += card.value()

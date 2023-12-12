@@ -1,6 +1,6 @@
 package com.cormontia.adventOfCode.year2023
 
-import utils.parseListOfInts
+import utils.parseListOfIntegers
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
 
@@ -16,9 +16,9 @@ class Day06Solver {
         val distancesString = input[1].dropWhile { it != ':' }.drop(1)
         println("Distances are: $distancesString")
 
-        val times = parseListOfInts(timesString)
+        val times = parseListOfIntegers(timesString)
         println(times)
-        val distances = parseListOfInts(distancesString)
+        val distances = parseListOfIntegers(distancesString)
         println(distances)
 
         val product = solvePart1(times, distances)

@@ -1,6 +1,6 @@
 package utils
 
-fun parseListOfInts(str: String, separator: String = " "): List<Int> {
+fun parseListOfIntegers(str: String, separator: String = " "): List<Int> {
     val numbers = str.split(separator)
     val numbersList = mutableListOf<Int>()
     numbers.forEach {

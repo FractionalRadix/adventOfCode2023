@@ -36,15 +36,24 @@ class Day12Solver {
             // Then there is only one way that block could fit, and you can remove that part.
 
             if (blocks[0].startsWith('#')) {
-                blocks[0] = blocks[0].substring(values[0].toInt()) //TODO!+ Check for off-by-one error.
-                //TODO!~  Also remove the block entirely, if it is the empty string.
+                val block = blocks[0].substring(values[0].toInt()) //TODO!+ Check for off-by-one error.
+                if (blocks[0].isEmpty()) {
+                    blocks.removeFirst()
+                } else {
+                    blocks[0] = block
+                }
                 values.removeFirst()
                 println("New blocks: $blocks $values")
             }
+
             if (blocks.last().endsWith('#')) {
                 val block = blocks.last().reversed().substring(values.last().toInt()).reversed()
-                blocks[blocks.size - 1] = block
-                //TODO!~  Also remove the block entirely, if it is the empty string.
+                if (block.isEmpty()) {
+                    blocks.removeLast()
+                } else {
+                    blocks[blocks.size - 1] = block
+
+                }
                 values.removeLast()
                 println("New blocks: $blocks $values")
             }
