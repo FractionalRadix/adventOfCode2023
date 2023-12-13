@@ -3,13 +3,22 @@ package com.cormontia.adventOfCode.year2023
 import utils.transposeStringList
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
-import kotlin.math.abs
 
 class Day13Solver {
     fun solve() {
         val input = Path("""src/main/resources/inputFiles/AoCDay13.txt""")
             .readLines()
 
+        val maps = determineMaps(input)
+
+        val solution1 = solvePart1(maps)
+        println("The weighted sum of the lines of reflection is $solution1.")
+
+        val solution2 = solvePart2(maps) // 25450
+        println("The weighted sum of the lines of reflection, accounting for smudges, is $solution2.")
+    }
+
+    private fun determineMaps(input: List<String>): MutableList<Map> {
         val maps = mutableListOf<Map>()
         var current = mutableListOf<String>()
         for (line in input) {
@@ -23,41 +32,23 @@ class Day13Solver {
         }
         val map = Map(current)
         maps.add(map)
-
-        //solvePart1(maps)
-
-        solvePart2(maps) // 21186 is TOO LOW. // 31399 is TOO HIGH.
+        return maps
     }
 
-    private fun solvePart2(maps: MutableList<Map>) {
+    private fun solvePart2(maps: MutableList<Map>): Int {
 
         var horizontalSum = 0
         var verticalSum = 0
         for (map in maps) {
-
-            println()
-            println("NEW MAP.")
 
             val horiz = findSmudgeLine(map.list)
             horizontalSum += horiz.sum()
 
             val vertic = findSmudgeLine(transposeStringList(map.list))
             verticalSum += vertic.sum()
-
-            if (horiz.size > 1) {
-                println("Erratic (H)? $horiz")
-                map.print()
-            }
-            if (vertic.size > 1) {
-                println("Erratic (V)? $vertic")
-                map.print()
-            }
         }
 
-        println()
-        println("Horizontal sum: $horizontalSum")
-        println("Vertical sum: $verticalSum")
-        println("Result: ${100 * horizontalSum + verticalSum}")
+        return 100 * horizontalSum + verticalSum
     }
 
     /**
@@ -77,7 +68,7 @@ class Day13Solver {
     }
 
 
-    fun findSmudgeLine(list: List<String>): List<Int> {
+    private fun findSmudgeLine(list: List<String>): List<Int> {
 
         // First, find all lines that differ in exactly one spot.
         var pairs = mutableListOf<Pair<Int,Int>>()
@@ -94,7 +85,7 @@ class Day13Solver {
         // First, the difference between them should be an odd number.
         pairs = pairs.filter { isOdd(Math.abs(it.first - it.second)) }.toMutableList()
 
-        println("Candidate pairs: $pairs.")
+        //println("Candidate pairs: $pairs.")
 
         // For these candidates, find the axis.
         // Then check if all OTHER lines mirror properly around that axis.
@@ -103,12 +94,12 @@ class Day13Solver {
             val axis = (pair.first + pair.second + 1)/2
             val axisValid = isValidAxis(axis, list, pair)
             if (axisValid) {
-                println("Valid! $axis")
+                //println("Valid! $axis")
                 validAxes.add(axis)
             }
         }
 
-        println("Axes: $validAxes" )
+        //println("Axes: $validAxes" )
         return (validAxes)
     }
 
@@ -137,22 +128,16 @@ class Day13Solver {
 
     fun isOdd(n: Int): Boolean = (n % 2) == 1
 
-    private fun solvePart1(maps: MutableList<Map>) {
+    private fun solvePart1(maps: MutableList<Map>): Int {
         var horizontalSum = 0
         var verticalSum = 0
         for (m in maps) {
-            println()
-            m.print()
-            println("Horizontal:")
             val horizontalValues = m.findHorizontalMirror(m.list)
             horizontalSum += horizontalValues.sum()
-            println("Vertical:")
             val verticalValues = m.findVerticalMirror(m.list)
             verticalSum += verticalValues.sum()
         }
-        println("Horizontal sum: $horizontalSum")
-        println("Vertical sum: $verticalSum")
-        println("Result: ${100 * horizontalSum + verticalSum}")
+        return 100 * horizontalSum + verticalSum
     }
 
     class Map(val list: MutableList<String>) {
@@ -168,7 +153,7 @@ class Day13Solver {
             for (i in list.indices.drop(1)) {
                 if (list[i] == list[i - 1]) {
                     if (confirmHorizontalMirroring(list,i-1, i)) {
-                      println("Found: $i ${i+1}") // Note the off-by-one correction.
+                      //println("Found: $i ${i+1}") // Note the off-by-one correction.
                         result.add(i)
                     }
                 }
