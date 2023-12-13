@@ -7,7 +7,7 @@ import kotlin.math.abs
 
 class Day13Solver {
     fun solve() {
-        val input = Path("""src/main/resources/inputFiles/AoCDay13_sample1.txt""")
+        val input = Path("""src/main/resources/inputFiles/AoCDay13.txt""")
             .readLines()
 
         val maps = mutableListOf<Map>()
@@ -24,7 +24,7 @@ class Day13Solver {
         val map = Map(current)
         maps.add(map)
 
-        solvePart1(maps)
+        //solvePart1(maps)
 
         solvePart2(maps) // 21186 is TOO LOW. // 31399 is TOO HIGH.
     }
@@ -43,8 +43,18 @@ class Day13Solver {
 
             val vertic = findSmudgeLine(transposeStringList(map.list))
             verticalSum += vertic.sum()
+
+            if (horiz.size > 1) {
+                println("Erratic (H)? $horiz")
+                map.print()
+            }
+            if (vertic.size > 1) {
+                println("Erratic (V)? $vertic")
+                map.print()
+            }
         }
 
+        println()
         println("Horizontal sum: $horizontalSum")
         println("Vertical sum: $verticalSum")
         println("Result: ${100 * horizontalSum + verticalSum}")
@@ -84,6 +94,8 @@ class Day13Solver {
         // First, the difference between them should be an odd number.
         pairs = pairs.filter { isOdd(Math.abs(it.first - it.second)) }.toMutableList()
 
+        println("Candidate pairs: $pairs.")
+
         // For these candidates, find the axis.
         // Then check if all OTHER lines mirror properly around that axis.
         val validAxes = mutableListOf<Int>()
@@ -107,10 +119,9 @@ class Day13Solver {
     ): Boolean {
         var axisValid = true
         var d = 1
-        while (axis - d >= 0 && axis + 1 + d < list.size) {
+        while (axis - d >= 0 && axis - 1 + d < list.size) {
             val idx1 = axis - d
             val idx2 = axis - 1 + d
-            //println("axis=$axis d=$d idx1==$idx1 idx2==$idx2")
             if (idx1 == Math.min(pair.first, pair.second)) { // Skip the line that differs by one.
                 d++
                 continue
@@ -146,7 +157,7 @@ class Day13Solver {
 
     class Map(val list: MutableList<String>) {
         fun print() {
-            println("NEW MAP:")
+            println("MAP:")
             for (l in list) {
                 println(l)
             }
