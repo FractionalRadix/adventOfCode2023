@@ -6,9 +6,8 @@ import kotlin.io.path.readLines
 
 class Day14Solver {
     fun solve() {
-        val input = Path("""src/main/resources/inputFiles/AoCDay14.txt""")
+        val input = Path("""src/main/resources/inputFiles/AoCDay14_sample1.txt""")
             .readLines()
-
 
         val totalLoad = solvePart1(input)
         println("Total load: $totalLoad") // 108641
@@ -16,13 +15,26 @@ class Day14Solver {
     }
 
     fun solvePart2(input: List<String>) {
+        val turn1 = transposeStringList(input)
+        val turn1Shifted1 = moveRoundedRocksToLeft(turn1)
+        val turn1Shifted2 = transposeStringList(turn1Shifted1)
+
+        println(turn1Shifted2)
+        val turn2 = turn1Shifted2.map { it.reversed() }
+        println(turn2)
+        //TODO!+ Two cycles, three cycles
+        // Two cycles should be a matter of reversing the list...
+        // Three should be reversing and transposing...
+
 
     }
+
 
     private fun solvePart1(input: List<String>): Int {
         val transposed = transposeStringList(input)
         val transposedAndShifted = moveRoundedRocksToLeft(transposed)
         val shiftedGrid = transposeStringList(transposedAndShifted)
+        println(shiftedGrid)
         return calculateLoad(shiftedGrid)
     }
 
