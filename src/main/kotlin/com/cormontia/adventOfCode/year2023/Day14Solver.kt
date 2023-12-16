@@ -14,28 +14,54 @@ class Day14Solver {
         val totalLoadAfterManyTurns = solvePart2(input) // Too low: 84239
     }
 
-    fun solvePart2(input: List<String>) {
+    private fun solvePart2(input: List<String>): Int {
+        // Keep track of the maps.
+        // The moment we see the same map twice, we have a cycle.
 
-        // INEXACT approach: check if a given load occurs multiple times in the result.
-        //   A better approach would be to check if a specific PATTERN reoccurs.
-
-        val loads = mutableListOf<Int>()
+        val repetitions = 1000000000
+        val mapHistory = mutableListOf<List<String>>()
         var afterCycle = input
-        for (i in 1..1000000000) {
+        mapHistory.add(afterCycle)
+
+        for (i in 1..repetitions) {
             afterCycle = cycle(afterCycle)
+
             val load = calculateLoad(afterCycle)
             println("Round $i: $load")
-            val prev = loads.indexOfFirst { it == load }
-            if (prev > -1) { println("Found previously at position: $prev") }
-            loads.add(load)
 
-            //TODO!~  Find if this load was found before. IF so, when.
-            // NOTE: It starts repeating at position 162 / 182 .
+            val prev = mapHistory.indexOfFirst { equalMaps(it, afterCycle) }
+            if (prev > -1) {
+                println("Found previously at position: $prev")
+                val offset = prev
+                val cycle = mapHistory.size - offset
+                println("Offset: $offset Cycle: $cycle")
+                val remainder = (repetitions - offset) % cycle
+                println("Should be the value at $offset + $remainder, i.e. at ${offset+remainder}")
+                val oldLoad = calculateLoad(mapHistory[offset + remainder])
 
-            //if (load > 84239) {
-            //    println("Candidate: $load")
-            //}
+                println(oldLoad)
+
+                //println("At: ${mapHistory[offset + remainder]}")
+
+
+                return oldLoad
+            }
+            mapHistory.add(afterCycle)
         }
+
+        return 0 //TODO!~
+    }
+
+
+
+    fun equalMaps(map1: List<String>, map2: List<String>): Boolean {
+        if (map1.size != map2.size)
+            return false
+        for (i in map1.indices) {
+            if (map1[i] != map2[i])
+                return false
+        }
+        return true
     }
 
 
