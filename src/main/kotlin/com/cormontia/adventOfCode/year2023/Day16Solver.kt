@@ -1,5 +1,6 @@
 package com.cormontia.adventOfCode.year2023
 
+import utils.Direction
 import utils.Coor
 import utils.buildGridMap
 import kotlin.io.path.Path
@@ -228,7 +229,6 @@ class Day16Solver {
     }
 
     class Tile(val contents: Char, var isEnergized: Boolean)
-    enum class Direction { RIGHT, DOWN, LEFT, UP }
 
     class Beam(var position: Coor, var direction: Direction, val history: MutableList<Pair<Coor, Direction>>) {
         fun contains(coor: Coor, direction: Direction) = history.any { it.first == coor && it.second == direction }
