@@ -13,29 +13,39 @@ class Day17Solver {
 
         val map = buildGridMap(input)
             .mapValues { Node(it.value.toInt()) }
+            .toMutableMap()
 
         val maxRows = map.keys.maxBy { it.row }.row
         val maxCols = map.keys.maxBy { it.col }.col
         val destinationNode = Coor(maxRows, maxCols)
 
-        val currentWalkers = mutableListOf<Walker>()
+        var currentWalkers = mutableListOf<Walker>()
         currentWalkers.add(Walker(Coor(0L, 0L), Direction.LEFT, 0, map[Coor(0L, 0L)]?.heatLoss!!))
         currentWalkers.add(Walker(Coor(0L, 0L), Direction.DOWN, 0, map[Coor(0L, 0L)]?.heatLoss!!))
         do {
             val nextWalkers = mutableListOf<Walker>()
             for (walker in currentWalkers) {
-
-                val heatLoss = map[walker.coor]
-
-
-                val nextWalkers = findNextIteration(map, walker)
-                for (node in nextWalkers) {
-                  //TODO!+
+                val heatLoss = walker.cumulativeHeatLoss
+                val currentBest = map[walker.coor]?.shortestDistance
+                if (currentBest == null || heatLoss < currentBest) {
+                    map[walker.coor]!!.shortestDistance = walker.cumulativeHeatLoss
                 }
-          }
 
-        } while ( something )
+                val spawnedWalkers = findNextIteration(map, walker)
+                nextWalkers.addAll(spawnedWalkers)
+            }
 
+            println("Next generation size: ${nextWalkers.size}")
+
+            if (currentWalkers.any { it.coor == destinationNode }) {
+                break;
+            }
+
+            currentWalkers = nextWalkers
+
+        } while ( true )
+
+        println("Shortest distance: ${map[destinationNode]!!.shortestDistance}")
 
 
         /*
@@ -55,7 +65,7 @@ class Day17Solver {
 
         val above = Coor(coor.row - 1, coor.col)
         if (mapKeys.contains(above)) {
-            val heatLoss = map[above]?.heatLoss!!
+            val heatLoss = map[above]?.heatLoss ?: 0
             if (direction == Direction.UP && stepsTaken < 3) {
                 result.add(Walker(above, direction, stepsTaken + 1, cumulativeLoss + heatLoss))
             } else if (direction != Direction.DOWN) {
@@ -65,7 +75,7 @@ class Day17Solver {
 
         val below = Coor(coor.row + 1, coor.col)
         if (mapKeys.contains(below)) {
-            val heatLoss = map[above]?.heatLoss!!
+            val heatLoss = map[above]?.heatLoss?: 0
             if (direction == Direction.DOWN && stepsTaken < 3) {
                 result.add(Walker(below, direction, stepsTaken + 1, cumulativeLoss + heatLoss))
             } else if (direction != Direction.UP) {
@@ -75,7 +85,7 @@ class Day17Solver {
 
         val left = Coor(coor.row, coor.col - 1)
         if (mapKeys.contains(left)) {
-            val heatLoss = map[above]?.heatLoss!!
+            val heatLoss = map[above]?.heatLoss?: 0
             if (direction == Direction.LEFT && stepsTaken < 3) {
                 result.add(Walker(left, direction, stepsTaken + 1, cumulativeLoss + heatLoss))
             } else if (direction != Direction.RIGHT) {
@@ -85,7 +95,7 @@ class Day17Solver {
 
         val right = Coor(coor.row, coor.col + 1)
         if (mapKeys.contains(right)) {
-            val heatLoss = map[above]?.heatLoss!!
+            val heatLoss = map[above]?.heatLoss?: 0
             if (direction == Direction.RIGHT && stepsTaken < 3) {
                 result.add(Walker(right, direction, stepsTaken + 1, cumulativeLoss + heatLoss))
             } else if (direction != Direction.LEFT) {
