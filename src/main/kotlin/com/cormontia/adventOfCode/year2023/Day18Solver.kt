@@ -3,7 +3,6 @@ package com.cormontia.adventOfCode.year2023
 import utils.Direction
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
-import kotlin.time.measureTime
 
 class Day18Solver {
     fun solve() {
@@ -53,14 +52,14 @@ class Day18Solver {
                 }
                 Direction.RIGHT -> {
                     for (i in 0 ..< cmd.meters) {
-                        val next = Coor(x + 1, y)
+                        val next = Coor(x + i, y)
                         map[next] = '#'
                     }
                     x += cmd.meters
                 }
                 Direction.LEFT -> {
                     for (i in 0 ..< cmd.meters) {
-                        val next = Coor(x - 1, y)
+                        val next = Coor(x - i, y)
                         map[next] = '#'
                     }
                     x -= cmd.meters
