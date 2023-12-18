@@ -3,12 +3,74 @@ package com.cormontia.adventOfCode.year2023
 import utils.Direction
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
+import kotlin.math.abs
 
 class Day18Solver {
     fun solve() {
-        val input = Path("""src/main/resources/inputFiles/AoCDay18_sample1.txt""")
+        val input = Path("""src/main/resources/inputFiles/AoCDay18.txt""")
             .readLines()
 
+        solvePart1(input)
+        solvePart2(input)
+
+    }
+
+    private fun solvePart2(input: List<String>) {
+        val commands = buildCommandListPart2(input)
+
+        val map = buildMapFromInstructions(commands)
+
+        val minX = map.keys.minBy { it.x }.x
+        val maxX = map.keys.maxBy { it.x }.x
+        val minY = map.keys.minBy { it.y }.y
+        val maxY = map.keys.maxBy { it.y }.y
+
+        val mapSize = abs(maxX - minX) * abs(maxY - minY)
+        println("Map size: $mapSize.") // 1407374123584  for the sample input.
+                                       // 154878206609891 for the real input.
+
+        val startY = minY + 1
+        val startX = map.filter { it.key.y == startY }.filter { it.value == '#' }.minBy { it.key.x }.key.x + 1
+        val start = Coor(startX, minY + 1)
+
+        floodFill(map, start)
+        //printMap(map)
+
+        val size = map.count { it.value == '#' }
+        println("The trench has size $size.")
+
+    }
+
+    private fun solvePart1(input: List<String>) {
+        val commands = buildCommandListPart1(input)
+
+        val map = buildMapFromInstructions(commands)
+
+        println("Map:")
+        printMap(map)
+
+        println("Map after floodFill:")
+
+        val minX = map.keys.minBy { it.x }.x
+        val maxX = map.keys.maxBy { it.x }.x
+        val minY = map.keys.minBy { it.y }.y
+        val maxY = map.keys.maxBy { it.y }.y
+
+        val mapSize = abs(maxX - minX) * abs(maxY - minY)
+        println("Map size: $mapSize.") // 141240
+        //TODO!~ Find a generic way to find the first "inside" tile.
+        val startY = minY + 1
+        val startX = map.filter { it.key.y == startY }.filter { it.value == '#' }.minBy { it.key.x }.key.x + 1
+        val start = Coor(startX, minY + 1)
+
+        floodFill(map, start)
+        printMap(map)
+
+        val size = map.count { it.value == '#' }
+        println("The trench has size $size.")
+    }
+
+    private fun buildCommandListPart1(input: List<String>): MutableList<Command> {
         val commands = mutableListOf<Command>()
         for (line in input) {
             val components = line.split(" ")
@@ -19,46 +81,78 @@ class Day18Solver {
                 'D' -> Direction.DOWN
                 'L' -> Direction.LEFT
                 'R' -> Direction.RIGHT
-                else -> { println("Error! Unknown direction!"); Direction.UP }
+                else -> {
+                    println("Error! Unknown direction!"); Direction.UP
+                }
             }
             val cmdLength = components[1].toInt()
-            val hexStr = components[2].substring(2,8)
+            val hexStr = components[2].substring(2, 8)
             //println(hexStr)
             val hex = hexStr.toInt(16)
 
             val cmd = Command(cmdDirection, cmdLength, hex)
             commands.add(cmd)
-            //cmd.print()
         }
+        return commands
+    }
 
+    private fun buildCommandListPart2(input: List<String>): MutableList<Command> {
+        val commands = mutableListOf<Command>()
+        for (line in input) {
+            val components = line.split(" ")
+            val hexStr = components[2].substring(2, 8)
+
+            val dirChar = hexStr[5]
+            val cmdDirection = when (dirChar) {
+                '3' -> Direction.UP
+                '1' -> Direction.DOWN
+                '2' -> Direction.LEFT
+                '0' -> Direction.RIGHT
+                else -> {
+                    println("Error! Unknown direction!"); Direction.UP
+                }
+            }
+            val cmdLength = hexStr.take(5).toInt(16)
+
+            val cmd = Command(cmdDirection, cmdLength, 0)
+            commands.add(cmd)
+            println("Command: ${cmd.direction} ${cmd.meters}")
+        }
+        return commands
+    }
+
+    private fun buildMapFromInstructions(commands: MutableList<Command>): MutableMap<Coor, Char> {
         val map = mutableMapOf<Coor, Char>()
         var x = 0L
         var y = 0L
         for (cmd in commands) {
             when (cmd.direction) {
                 Direction.UP -> {
-                    for (i in 0 ..< cmd.meters) {
+                    for (i in 0..<cmd.meters) {
                         val next = Coor(x, y + i)
                         map[next] = '#'
                     }
                     y += cmd.meters
                 }
+
                 Direction.DOWN -> {
-                    for (i in 0 ..< cmd.meters) {
+                    for (i in 0..<cmd.meters) {
                         val next = Coor(x, y - i)
                         map[next] = '#'
                     }
                     y -= cmd.meters
                 }
+
                 Direction.RIGHT -> {
-                    for (i in 0 ..< cmd.meters) {
+                    for (i in 0..<cmd.meters) {
                         val next = Coor(x + i, y)
                         map[next] = '#'
                     }
                     x += cmd.meters
                 }
+
                 Direction.LEFT -> {
-                    for (i in 0 ..< cmd.meters) {
+                    for (i in 0..<cmd.meters) {
                         val next = Coor(x - i, y)
                         map[next] = '#'
                     }
@@ -66,18 +160,7 @@ class Day18Solver {
                 }
             }
         }
-
-        println("Map:")
-        printMap(map)
-
-        println("Map after floodFill:")
-        floodFill(map, Coor(1, 1))
-        printMap(map)
-
-        val size = countInside(map)
-        println("The trench has size $size.")
-
-
+        return map
     }
 
     private fun printMap(map: Map<Coor, Char>) {
@@ -87,6 +170,7 @@ class Day18Solver {
         val maxY = map.keys.maxBy { it.y }.y
 
         for (y in maxY downTo  minY ) {
+            //println("y==$y")
             println()
             for (x in minX .. maxX) {
                 if (map.containsKey(Coor(x,y))) {
@@ -105,7 +189,7 @@ class Day18Solver {
         val maxY = map.keys.maxBy { it.y }.y
 
         for (y in maxY downTo  minY ) {
-            println()
+            //println()
             for (x in minX .. maxX) {
                 if (map.containsKey(Coor(x,y))) {
                     //print('#')
@@ -118,26 +202,93 @@ class Day18Solver {
         return 0 //TODO!~
     }
 
+    private fun findTopLeftCorner(map: MutableMap<Coor, Char>) {
+        val minY = map.keys.minBy { it.y }.y
+        val maxY = map.keys.maxBy {it.y}.y
+        for (y in minY .. maxY) {
+            //val row = map.filter { it.key.y == y }.toList().sortedBy { it.first.x }.toString()
+            val row = map.filter { it.key.y == y }
+            val firstHash = row.filter { it.value == '#' }.minByOrNull { it.key.x }
+            if (firstHash != null) {
+                //val nextPos =
+            }
+
+
+        }
+    }
+
     private fun floodFill(map: MutableMap<Coor, Char>, start: Coor) {
+        val minX = map.keys.minBy { it.x }.x
+        val maxX = map.keys.maxBy { it.x }.x
+        val minY = map.keys.minBy { it.y }.y
+        val maxY = map.keys.maxBy { it.y }.y
+
+        val list = mutableListOf<Coor>()
+        list.add(start)
+
+        while (list.isNotEmpty()) {
+            //print("list size: ${list.size}")
+            val coor = list.first()
+            map[coor] = '#'
+            list.removeFirst()
+
+            if (coor.x - 1 >= minX) {
+                val left = Coor(coor.x - 1, coor.y)
+                if (map[left] == null && !list.contains(left)) {
+                    list.add(left)
+                }
+            }
+
+            if (coor.x + 1 <= maxX) {
+                val right = Coor(coor.x + 1, coor.y)
+                if (map[right] == null && !list.contains(right)) {
+                    list.add(right)
+                }
+            }
+
+            if (coor.y - 1 >= minY) {
+                val below = Coor(coor.x, coor.y - 1)
+                if (map[below] == null && !list.contains(below)) {
+                    list.add(below)
+                }
+            }
+
+            if (coor.y + 1 <= maxY) {
+                val above = Coor(coor.x, coor.y + 1)
+                if (map[above] == null && !list.contains(above)) {
+                    list.add(above)
+                }
+            }
+
+            //println("list size at end: ${list.size}")
+        }
+    }
+
+    private fun recursiveFloodFill(map: MutableMap<Coor, Char>, start: Coor) {
+        //println("Floodfill: $start")
+        //println("${map[start]}")
         if (map[start] == '#')
             return
 
         val minX = map.keys.minBy { it.x }.x
         val maxX = map.keys.maxBy { it.x }.x
+        //println("x: $minX .. $maxX")
         if (start.x < minX || start.x > maxX)
             return
 
         val minY = map.keys.minBy { it.y }.y
         val maxY = map.keys.maxBy { it.y }.y
+        //println("y: $minY .. $maxY")
         if (start.y < minY || start.y > maxY)
             return
 
+        //print("Filling in: $start")
         map[start] = '#'
 
-        floodFill(map, Coor(start.x-1, start.y))
-        floodFill(map, Coor(start.x+1, start.y))
-        floodFill(map, Coor(start.x, start.y-1))
-        floodFill(map, Coor(start.x, start.y+1))
+        recursiveFloodFill(map, Coor(start.x-1, start.y))
+        recursiveFloodFill(map, Coor(start.x+1, start.y))
+        recursiveFloodFill(map, Coor(start.x, start.y-1))
+        recursiveFloodFill(map, Coor(start.x, start.y+1))
     }
 
     class Command(val direction: Direction, val meters: Int, val color: Int) {
