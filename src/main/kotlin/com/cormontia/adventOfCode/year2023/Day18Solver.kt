@@ -67,7 +67,15 @@ class Day18Solver {
             }
         }
 
+        println("Map:")
         printMap(map)
+
+        println("Map after floodFill:")
+        floodFill(map, Coor(1, 1))
+        printMap(map)
+
+        val size = countInside(map)
+        println("The trench has size $size.")
 
 
     }
@@ -88,6 +96,48 @@ class Day18Solver {
                 }
             }
         }
+    }
+
+    private fun countInside(map: MutableMap<Coor, Char>): Int {
+        val minX = map.keys.minBy { it.x }.x
+        val maxX = map.keys.maxBy { it.x }.x
+        val minY = map.keys.minBy { it.y }.y
+        val maxY = map.keys.maxBy { it.y }.y
+
+        for (y in maxY downTo  minY ) {
+            println()
+            for (x in minX .. maxX) {
+                if (map.containsKey(Coor(x,y))) {
+                    //print('#')
+                } else {
+                    //print('.')
+                }
+            }
+        }
+
+        return 0 //TODO!~
+    }
+
+    private fun floodFill(map: MutableMap<Coor, Char>, start: Coor) {
+        if (map[start] == '#')
+            return
+
+        val minX = map.keys.minBy { it.x }.x
+        val maxX = map.keys.maxBy { it.x }.x
+        if (start.x < minX || start.x > maxX)
+            return
+
+        val minY = map.keys.minBy { it.y }.y
+        val maxY = map.keys.maxBy { it.y }.y
+        if (start.y < minY || start.y > maxY)
+            return
+
+        map[start] = '#'
+
+        floodFill(map, Coor(start.x-1, start.y))
+        floodFill(map, Coor(start.x+1, start.y))
+        floodFill(map, Coor(start.x, start.y-1))
+        floodFill(map, Coor(start.x, start.y+1))
     }
 
     class Command(val direction: Direction, val meters: Int, val color: Int) {
