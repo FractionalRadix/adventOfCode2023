@@ -2,6 +2,7 @@ package com.cormontia.adventOfCode.year2023
 
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
+import kotlin.math.max
 
 class Day19Solver {
     fun solve() {
@@ -12,19 +13,101 @@ class Day19Solver {
 
         val machineParts = parseMachineParts(input)
 
-        val acceptedParts = mutableListOf<MachinePart>()
-        for (machinePart in machineParts) {
+        val sum = solvePart1(machineParts, instructions)
+        println(sum)
 
-            val accepted = applyWorkflows(instructions, machinePart)
-            if (accepted) {
-                acceptedParts.add(machinePart)
+    }
+
+    private fun solvePart2_DFA(instructions: List<Workflow>): Long {
+        // Approach: build a DFA from the instructions.
+        // Find all paths that result in "Accept". Assuming they are distinct.
+        // The transitions are the conditions. All we need to do now is apply all conditions.
+        //  For example, "a < 2006", "x > 787", "a > 310" ...
+
+        //TODO!+
+        return 0L
+    }
+
+    private fun solvePart2_quantum(instructions: List<Workflow>): Long {
+        // Walk through the rules using a "ManyMachine". Like a quantum thing, it is in many states :-)
+        // The "ManyMachines" just keep track of the upper and lower bounds for a given state.
+
+        val activeWorkflows = mutableListOf<Workflow>()
+        activeWorkflows.add(instructions.first { it.name == "in" })
+
+        //TODO!+ start applying the rules..
+        val firstMachines = SetOfMachines(1,4000,1,4000,1,4000,1,4000)
+
+        //TODO!~ This should eventually become a loop to perform the stuff...
+        val rule = activeWorkflows.first().workflowActivities.first()
+        if (rule is ComparingRule) {
+            firstMachines.applyComparingRule(rule)
+
+            //TODO!+
+        }
+
+        return 0
+    }
+
+    class SetOfMachines(
+        var minX: Int, var maxX: Int,
+        var minM: Int, var maxM: Int,
+        var minA: Int, var maxA: Int,
+        var minS: Int, var maxS: Int,
+    ) {
+        fun applyComparingRule(rule: ComparingRule): List<Pair<SetOfMachines, Rule?>> {
+
+            val result = mutableListOf<Pair<SetOfMachines, Rule?>>()
+
+            if (rule.ch == 'x') {
+                if (rule.greaterThan) {
+                    // x > value.
+                    // We differentiate between two cases: where this applies, and where it doesn't.
+
+                    // If the new minimum value for x is LOWER than its current value, keep the current (i.e. highest) minimum.
+                    val newMinimum = max(rule.value + 1, minX)
+                    // If the new minimum value for x exceeds its current maximum, then the set of machines represented is empty (empty intersection).
+                    if (newMinimum <= maxX) {
+                        val nextMachine1 = SetOfMachines(newMinimum, maxX, minM, maxM, minA, maxA, minS, maxS)
+                        val nextRule1 = rule.next
+                        result.add(Pair(nextMachine1, nextRule1))
+                    }
+
+                    //TODO!+ Add the same conditions.
+                    val nextMachine2 = SetOfMachines(minX, rule.value, minM, maxM, minA, maxA, minS, maxS)
+                    val nextRule2 =
+                        null //TODO!+ The caller must keep in mind that this transfers the state to the next step in the CURRENT workflow!
+                    result.add(Pair(nextMachine2, nextRule2))
+
+                } else {
+                    // x < value
+
+                    //TODO!+ Add conditions
+                    val nextMachine1 = SetOfMachines(minX, rule.value - 1, minM, maxM, minA, maxA, minS, maxS)
+                    val nextRule1 = rule.next
+                    result.add(Pair(nextMachine1, nextRule1))
+
+                    //TODO!+ Add conditions
+                    val nextMachine2 = SetOfMachines(rule.value, maxX, minM, maxM, minA, maxA, minS, maxS)
+                    val nextRule2 =
+                        null //TODO!+ The caller must keep in mind that this transfers the state to the next step in the CURRENT workflow!
+                    result.add(Pair(nextMachine2, nextRule2))
+                }
             }
-        }
 
-        for (mp in acceptedParts) {
-            println(mp)
-        }
+            //TODO!+ The other letters
 
+            return result
+        }
+    }
+
+    private fun solvePart1(
+        machineParts: List<MachinePart>,
+        instructions: List<Workflow>,
+    ): Int {
+        return machineParts
+            .filter { applyWorkflows(instructions, it) }
+            .sumOf { it.rating() }
     }
 
     private fun applyWorkflows(
@@ -88,7 +171,6 @@ class Day19Solver {
         }
         return workflows
     }
-
 
     private fun parseRule(rule: String): Rule {
         lateinit var newRule: Rule
@@ -156,8 +238,6 @@ class Day19Solver {
     class JustWorkflowName(val name: String): Rule() {
         override fun toString() = name
     }
-
-
 
     private fun parseMachineParts(input: List<String>): List<MachinePart> {
         val result = mutableListOf<MachinePart>()
