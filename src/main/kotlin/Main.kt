@@ -18,6 +18,7 @@ fun main(args: Array<String>) {
     //Day15Solver().solve() // 511498, 284674
     //Day16Solver().solve() // 7870, 8143
     //Day17Solver().solve()
-    Day18Solver().solve() // 52035,
+    //Day18Solver().solve() // 52035, ..under construction...
+    Day19Solver().solve()
 }
 

@@ -7,12 +7,11 @@ import kotlin.math.abs
 
 class Day18Solver {
     fun solve() {
-        val input = Path("""src/main/resources/inputFiles/AoCDay18.txt""")
+        val input = Path("""src/main/resources/inputFiles/AoCDay18_sample1.txt""")
             .readLines()
 
         solvePart1(input)
         solvePart2(input)
-
     }
 
     private fun solvePart2(input: List<String>) {
@@ -27,18 +26,107 @@ class Day18Solver {
 
         val mapSize = abs(maxX - minX) * abs(maxY - minY)
         println("Map size: $mapSize.") // 1407374123584  for the sample input.
-                                       // 154878206609891 for the real input.
+        // 154878206609891 for the real input.
 
-        val startY = minY + 1
-        val startX = map.filter { it.key.y == startY }.filter { it.value == '#' }.minBy { it.key.x }.key.x + 1
-        val start = Coor(startX, minY + 1)
+        var sum = 0L
+        for (y in minY .. maxY) {
+            if (abs(y) % 500L == 0L) {
+                println("Row: $y")
+            }
+            //val inside = countInsideInRow(map, y, minX - 1, maxX + 1)
+            val inside = countInsideInRow2(map, y)
+            sum += inside
+        }
+        println("Total nr of inside parts: $sum")
+    }
 
-        floodFill(map, start)
-        //printMap(map)
 
-        val size = map.count { it.value == '#' }
-        println("The trench has size $size.")
+    enum class Side { LeftEdge, Inside, RightEdge, Outside }
 
+    private fun countInsideInRow2(map: Map<Coor, Char>, y: Long): Long {
+        val row = map.filter { it.key.y == y }.map { it.key.x }.sortedBy { it }.asSequence().iterator()
+
+        if (!row.hasNext())
+            return 0
+
+        val prev = row.next()
+        var side = Side.LeftEdge
+
+        var insides = 0L
+
+        while (row.hasNext()) {
+            if (row.next() > prev + 1) {
+                // We encountered a gap!
+                if (side == Side.LeftEdge) {
+                    side = Side.Inside
+                    insides++
+                } else if (side == Side.Inside) {
+                    side = Side.RightEdge
+                    insides++
+                } else if (side == Side.RightEdge) {
+                    side = Side.Outside
+                } else if (side == Side.Outside) {
+                    side = Side.LeftEdge
+                    insides++
+                }
+            }
+            //print("count: $insides")
+        }
+
+        return insides
+    }
+
+    private fun countInsideInRow(map: Map<Coor, Char>, y: Long, minX: Long, maxX: Long): Long {
+        val row = map.filter { it.key.y == y }
+        // We bluntly assume that the first '#' in a row marks an edge; that any '.' before it is outside the trench.
+        // We also bluntly assume that "##" will never be an "outcropping", that any group of consecutive '#' marks is a border.
+        //val xCoordinates = row.filter { it.value == '#' }.map { it.key.x }
+        println("Start sorting.")
+        val xCoordinates = row.map { it.key.x }.sortedBy { it } // it.value == '#'  is implicit due to the way we represent the data.
+        println("Sorted.")
+
+        var sum = 0L
+
+        var x0 : Long? = minX
+        while (x0!! < maxX) { //TODO?~  Other criterion?!
+
+            //TODO?~ Since these are sorted, shouldn't there be a fast way to find the first NON-consecutive one?
+
+            //println("x0==$x0")
+            x0 = xCoordinates.firstOrNull { it > x0!! }
+            //println("x0==$x0")
+            if (x0 == null)
+                break
+            val counter1 = numberOfConsecutiveBangs(xCoordinates, x0)
+            //println("counter1==$counter1")
+            // At x0 we have "counter" consecutive bangs, x0 itself included.
+
+            val x1 = xCoordinates.firstOrNull { it > (x0!! + counter1) }
+            //println("x1==$x1")
+            if (x1 == null)
+                break
+            val counter2 = numberOfConsecutiveBangs(xCoordinates, x1)
+            // At x1 we have "counter" consecutive bangs, x1+counter itself included.
+
+            val x2 = x1 + counter2
+            //println("Nr in between: ${x2 - x1}")
+
+            sum += (x2 - x1)
+
+            x0 = x1 + counter2 + 1
+        }
+
+        return sum
+    }
+
+    private fun numberOfConsecutiveBangs(xCoordinates: List<Long>, x0: Long): Int {
+        var counter = 0
+        //println("Starting to count...")
+        while (xCoordinates.contains(x0 + counter)) {
+            counter++
+        }
+        //println("...counter: $counter")
+        return counter
     }
 
     private fun solvePart1(input: List<String>) {
