@@ -28,7 +28,7 @@ class Day21Solver {
     }
 
     private fun iterate(map: MutableMap<Coor, Char>): MutableMap<Coor, Char> {
-        var result = mutableMapOf<Coor, Char>()
+        val result = mutableMapOf<Coor, Char>()
 
         val minRow = map.keys.minBy { it.row }.row
         val maxRow = map.keys.maxBy { it.row }.row
