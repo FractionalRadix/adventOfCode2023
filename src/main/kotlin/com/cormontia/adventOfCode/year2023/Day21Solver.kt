@@ -7,7 +7,7 @@ import kotlin.io.path.readLines
 
 class Day21Solver {
     fun solve() {
-        val input = Path("""src/main/resources/inputFiles/AoCDay21_sample1.txt""")
+        val input = Path("""src/main/resources/inputFiles/AoCDay21.txt""")
             .readLines()
         val map = buildGridMap(input)
 
@@ -17,14 +17,14 @@ class Day21Solver {
 
     fun solvePart1(map: MutableMap<Coor, Char>): Int {
         var newMap = map
-        for (i in 1 .. 6) {
+        for (i in 1 .. 64) {
             newMap = iterate(newMap)
 
-            printMap(newMap)
+            //printMap(newMap)
             val count = newMap.count { it.value == 'O' || it.value == 'S' }
             println(count)
         }
-        return map.count { it.value == 'O' || it.value == 'S' }
+        return newMap.count { it.value == 'O' || it.value == 'S' }
     }
 
     private fun iterate(map: MutableMap<Coor, Char>): MutableMap<Coor, Char> {
@@ -40,7 +40,7 @@ class Day21Solver {
                 val coor = Coor(row, col)
                 if (map.containsKey(coor)) {
                     val next = map[coor]
-                    if (next == 'O')
+                    if (next == 'O' || next == 'S')
                         result[coor] = '.'
                     else
                         result[coor] = next!!
@@ -50,7 +50,6 @@ class Day21Solver {
 
         for (row in minRow .. maxRow) {
             for (col in minCol .. maxCol) {
-                //println("($row, $col)")
                 val cur = map[Coor(row, col)]
 
                 if (cur == 'S' || cur =='O') {
@@ -67,9 +66,7 @@ class Day21Solver {
 
     private fun updateNeighbour(row: Long, col: Long, map: MutableMap<Coor, Char>) {
         val neighbour = Coor(row, col)
-        //if (map[neighbour] != null && map[neighbour] != '#' && map[neighbour] != 'S') {
         if (map[neighbour] == '.') {
-            //println("Updating $neighbour")
             map[neighbour] = 'O'
         }
     }
