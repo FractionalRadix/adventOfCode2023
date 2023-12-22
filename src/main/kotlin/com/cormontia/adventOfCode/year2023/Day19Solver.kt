@@ -50,52 +50,61 @@ class Day19Solver {
     }
 
     class SetOfMachines(
-        var minX: Int, var maxX: Int,
-        var minM: Int, var maxM: Int,
-        var minA: Int, var maxA: Int,
-        var minS: Int, var maxS: Int,
+        minX: Int, maxX: Int,
+        minM: Int, maxM: Int,
+        minA: Int, maxA: Int,
+        minS: Int, maxS: Int
     ) {
+
+        data class SetOfParts(val ch: Char, var min: Int, var max: Int)
+
+        private var x: SetOfParts = SetOfParts('x', minX, maxX)
+        private var m: SetOfParts = SetOfParts('m', minM, maxM)
+        private var a: SetOfParts = SetOfParts('a', minA, maxA)
+        private var s: SetOfParts = SetOfParts('s', minS, maxS)
+
+        constructor(x: SetOfParts, m: SetOfParts, a: SetOfParts, s: SetOfParts) : this(
+            x.min, x.max, m.min, m.max, a.min, a.max, s.min, s.max
+        )
+
+        fun applyComparingRule(rule: ComparingRule, parts: SetOfParts): List<Pair<SetOfMachines, Rule?>> {
+            val result = mutableListOf<Pair<SetOfMachines, Rule?>>()
+
+            //TODO!+
+            if (rule.greaterThan) {
+                // The rule is: if the value of a part is greater than the threshold, we move the indicated next rule (rule.next).
+                // Otherwise, we move to the next rule in the current workflow (Rule? becomes null).
+
+                // So: we split our set of machine parts in two.
+                // First, there are the machine parts whose value is above the threshold. These will become (threshold, max, rule.next)
+                // Second, there are the machine parts whose value is below or equal to the threshold. These will become (min, threshold, null) //TODO!~ Check that!
+
+                // Let's assume we have the set of parts that is at least 1500 and at most 2500.
+                // If the new maximum is below or equal to 1500, the new set is empty: all the machine parts that are simultaneously above and below/equal to 1500.
+                // If the new minimum is above 2500, the new set is also empty: all the machine parts that are simultaneously above and below/equal to 2500.
+                // If the new minimum is (for example) 1900, then we get two new sets:
+                //  - the set of machine parts at [1500, 1900], which fails the rule, and the next rule must therefore be set to "null". (Filled in later as: next step in the workflow).
+                //  - the set of machine parts at [1901, 2500], which passes the rule. Its next rule is set to "rule.next" .
+
+
+                TODO()
+            } else { // if (rule.lesserThan)
+                TODO()
+            }
+
+            return result
+        }
+
         fun applyComparingRule(rule: ComparingRule): List<Pair<SetOfMachines, Rule?>> {
 
             val result = mutableListOf<Pair<SetOfMachines, Rule?>>()
 
-            if (rule.ch == 'x') {
-                if (rule.greaterThan) {
-                    // x > value.
-                    // We differentiate between two cases: where this applies, and where it doesn't.
-
-                    // If the new minimum value for x is LOWER than its current value, keep the current (i.e. highest) minimum.
-                    val newMinimum = max(rule.value + 1, minX)
-                    // If the new minimum value for x exceeds its current maximum, then the set of machines represented is empty (empty intersection).
-                    if (newMinimum <= maxX) {
-                        val nextMachine1 = SetOfMachines(newMinimum, maxX, minM, maxM, minA, maxA, minS, maxS)
-                        val nextRule1 = rule.next
-                        result.add(Pair(nextMachine1, nextRule1))
-                    }
-
-                    //TODO!+ Add the same conditions.
-                    val nextMachine2 = SetOfMachines(minX, rule.value, minM, maxM, minA, maxA, minS, maxS)
-                    val nextRule2 =
-                        null //TODO!+ The caller must keep in mind that this transfers the state to the next step in the CURRENT workflow!
-                    result.add(Pair(nextMachine2, nextRule2))
-
-                } else {
-                    // x < value
-
-                    //TODO!+ Add conditions
-                    val nextMachine1 = SetOfMachines(minX, rule.value - 1, minM, maxM, minA, maxA, minS, maxS)
-                    val nextRule1 = rule.next
-                    result.add(Pair(nextMachine1, nextRule1))
-
-                    //TODO!+ Add conditions
-                    val nextMachine2 = SetOfMachines(rule.value, maxX, minM, maxM, minA, maxA, minS, maxS)
-                    val nextRule2 =
-                        null //TODO!+ The caller must keep in mind that this transfers the state to the next step in the CURRENT workflow!
-                    result.add(Pair(nextMachine2, nextRule2))
-                }
+            when (rule.ch) {
+                'x' -> result.addAll(applyComparingRule(rule, this.x))
+                'm' -> result.addAll(applyComparingRule(rule, this.m))
+                'a' -> result.addAll(applyComparingRule(rule, this.a))
+                's' -> result.addAll(applyComparingRule(rule, this.s))
             }
-
-            //TODO!+ The other letters
 
             return result
         }
