@@ -18,22 +18,33 @@ class Day23Solver {
     fun solvePart1(grid: Grid) {
         // Inefficient solution: depth-first search with backtracking.
 
+        // Determine the starting point.
         val firstRow = grid.grid.filter { it.key.row == grid.minRow }
         val firstColIdx = firstRow.filter { it.value == '.' }.minBy { it.key.col }.key.col
+        val firstPos = Coor(grid.minRow, firstColIdx)
+
+        // Determine the ending point.
         val lastRow = grid.grid.filter { it.key.row == grid.maxRow }
         val lastColIdx = lastRow.filter { it.value == '.' }.maxBy { it.key.col }.key.col
-        val firstPos = Coor(grid.minRow, firstColIdx)
         val lastPos = Coor(grid.maxRow, lastColIdx)
-        val visited = mutableListOf<Coor>()
 
-        step(grid, firstPos, visited, lastPos)
+
+        step(grid, firstPos, emptyList(), lastPos)
     }
 
-    fun step(grid: Grid, pos: Coor, visited: MutableList<Coor>, goal: Coor) {
-        // paths (.), forest (#), and steep slopes (^, >, v, and <).
-        // Let's ignore the special rules for "slopes", and just treat them like "path".
+    private fun step(grid: Grid, pos: Coor, visited: List<Coor>, goal: Coor) {
+        val neighbours: Map<Coor, Char> = when (grid.grid[pos]) {
+            '.' -> grid.neighbours(pos)
+            '^' -> grid.grid.filter { it.key == Coor(pos.row - 1, pos.col) }
+            '>' -> grid.grid.filter { it.key == Coor(pos.row, pos.col + 1) }
+            'v' -> grid.grid.filter { it.key == Coor(pos.row + 1, pos.col) }
+            '<' -> grid.grid.filter { it.key == Coor(pos.row, pos.col - 1) }
+            else -> {
+                println("Error!! at position $pos . (Value: ${grid.grid[pos]}")
+                emptyMap()
+            }
+        }
 
-        val neighbours = grid.neighbours(pos)
         val nextSteps = neighbours
             .filter { it.value != '#' } // Only the tiles that you can move through.
             .filter { it.key !in visited } // Only tiles you haven't visited yet.
@@ -49,8 +60,6 @@ class Day23Solver {
             }
         }
     }
-
-
 }
 
 //TODO?~ Move to utils package?
