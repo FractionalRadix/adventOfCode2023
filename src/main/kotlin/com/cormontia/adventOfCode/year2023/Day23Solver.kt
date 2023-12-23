@@ -7,15 +7,16 @@ import kotlin.io.path.readLines
 
 class Day23Solver {
     fun solve() {
-        val input = Path("""src/main/resources/inputFiles/AoCDay23_sample1.txt""")
+        val input = Path("""src/main/resources/inputFiles/AoCDay23.txt""")
             .readLines()
 
         val grid = Grid(buildGridMap(input))
-        solvePart1(grid)
 
+        val solution1 = solvePart1(grid)
+        println("The longest path has $solution1 steps.")
     }
 
-    fun solvePart1(grid: Grid) {
+    fun solvePart1(grid: Grid): Int {
         // Inefficient solution: depth-first search with backtracking.
 
         // Determine the starting point.
@@ -28,11 +29,12 @@ class Day23Solver {
         val lastColIdx = lastRow.filter { it.value == '.' }.maxBy { it.key.col }.key.col
         val lastPos = Coor(grid.maxRow, lastColIdx)
 
-
-        step(grid, firstPos, emptyList(), lastPos)
+        val lengths = step(grid, firstPos, emptyList(), lastPos)
+        return lengths.max()
     }
 
-    private fun step(grid: Grid, pos: Coor, visited: List<Coor>, goal: Coor) {
+
+    private fun step(grid: Grid, pos: Coor, visited: List<Coor>, goal: Coor): List<Int> {
         val neighbours: Map<Coor, Char> = when (grid.grid[pos]) {
             '.' -> grid.neighbours(pos)
             '^' -> grid.grid.filter { it.key == Coor(pos.row - 1, pos.col) }
@@ -49,16 +51,22 @@ class Day23Solver {
             .filter { it.value != '#' } // Only the tiles that you can move through.
             .filter { it.key !in visited } // Only tiles you haven't visited yet.
 
+        val pathLengths = mutableListOf<Int>()
+
         val newList = mutableListOf<Coor>()
         newList.addAll(visited)
         newList.add(pos)
         for (elt in nextSteps) {
             if (elt.key == goal) {
                 println("Found! Length of path: ${newList.size}")
+                pathLengths.add(newList.size)
             } else {
-                step(grid, elt.key, newList, goal)
+                val results = step(grid, elt.key, newList, goal)
+                pathLengths.addAll(results)
             }
         }
+
+        return pathLengths
     }
 }
 
