@@ -16,6 +16,20 @@ class Day23Solver {
         //val solution1 = solvePart1(grid)
         //println("The longest path has $solution1 steps.")
 
+        /*
+        val ops = mutableMapOf<Long,Int>()
+        for (row in grid.minRow + 1 ..< grid.maxRow) {
+            val openings = grid
+                .grid
+                .filter { it.key.row == row }
+                .count { it.value != '#' }
+            ops[row] = openings
+            println("Openings for row $row: $openings.")
+        }
+        val least = ops.minBy { it.value }
+        println("Row ${least.key} is the thickest with ${least.value} opeings.") // Row 44, has 16 openings.
+         */
+
         val solution2 = solvePart2(grid)
         println("The longest path without the 'steep slope' rule has $solution2 steps.")
     }
@@ -43,7 +57,7 @@ class Day23Solver {
         val state0 = State(pos = firstPos, visited = emptyList())
         stack.push(state0)
         while (stack.isNotEmpty()) {
-            //println("Stack size: ${stack.size}")
+            //print("${stack.size} ") //TODO!-
             val state = stack.pop()
 
             val neighbours = grid.neighbours(state.pos)
@@ -51,7 +65,63 @@ class Day23Solver {
                 .filter { it.value != '#' } // Only the tiles that you can move through.
                 .filter { it.key !in state.visited } // Only tiles you haven't visited yet.
 
-            //val pathLengths = mutableListOf<Int>()
+            val newList = mutableListOf<Coor>()
+            newList.addAll(state.visited)
+            newList.add(state.pos)
+            for (elt in nextSteps) {
+                if (elt.key == goal) {
+                    println()
+                    println("Found! Length of path: ${newList.size}")
+                    pathLengths.add(newList.size)
+                } else {
+                    val nextState = State(elt.key, newList)
+                    stack.push(nextState)
+                }
+            }
+        }
+
+        println()
+        return pathLengths.max()
+    }
+
+
+    fun solvePart2_optimized(grid: Grid): Int {
+        // The recursive solution caused a stack overflow.
+        // Let's try an iterative solution, where we keep track of the stack ourselves.
+
+        //TODO?~ Gives wrong answer... is it the algorithm or the implementation?
+        // ANSWER: It's the algorithm. You could reach P via a shorter route, that is longer later on.
+        // The second part of that longer route, goes through values that were already visited by the other path.
+        //Optimization: annotate every grid tile with a "longest so far".
+        // If you reach that tile with a shorter route, drop.
+        val annotations = mutableMapOf<Coor, Int>()
+
+        data class State(val pos: Coor, val visited: List<Coor>)
+        val stack = Stack<State>()
+
+        // Determine the starting point.
+        val firstRow = grid.grid.filter { it.key.row == grid.minRow }
+        val firstColIdx = firstRow.filter { it.value == '.' }.minBy { it.key.col }.key.col
+        val firstPos = Coor(grid.minRow, firstColIdx)
+
+        // Determine the ending point.
+        val lastRow = grid.grid.filter { it.key.row == grid.maxRow }
+        val lastColIdx = lastRow.filter { it.value == '.' }.maxBy { it.key.col }.key.col
+        val lastPos = Coor(grid.maxRow, lastColIdx)
+
+        val goal = lastPos // No need to put this in the State class...
+        val pathLengths = mutableListOf<Int>() // again, no need to put this in the State class...
+
+        val state0 = State(pos = firstPos, visited = emptyList())
+        stack.push(state0)
+        while (stack.isNotEmpty()) {
+
+            val state = stack.pop()
+
+            val neighbours = grid.neighbours(state.pos)
+            val nextSteps = neighbours
+                .filter { it.value != '#' } // Only the tiles that you can move through.
+                .filter { it.key !in state.visited } // Only tiles you haven't visited yet.
 
             val newList = mutableListOf<Coor>()
             newList.addAll(state.visited)
@@ -61,14 +131,19 @@ class Day23Solver {
                     println("Found! Length of path: ${newList.size}")
                     pathLengths.add(newList.size)
                 } else {
-                    //val results = stepPart2(grid, elt.key, newList, goal)
-                    val nextState = State(elt.key, newList)
-                    //pathLengths.addAll(results)
-                    stack.push(nextState)
+                    val pathLength = newList.size
+                    val longestPathFound = annotations[elt.key] ?: 0
+                    print(" $longestPathFound")
+                    //if (pathLength > longestPathFound) {
+                        annotations[elt.key] = pathLength
+                        val nextState = State(elt.key, newList)
+                        stack.push(nextState)
+                    //}
                 }
             }
         }
 
+        println()
         return pathLengths.max()
     }
 
@@ -190,17 +265,17 @@ class Grid(val grid: Map<Coor, Char>) {
     fun neighbours(position: Coor): Map<Coor, Char> {
         val coordinates = mutableListOf<Coor>()
 
-        if (position.row > minRow) {
-            coordinates.add(Coor(position.row - 1, position.col))
-        }
         if (position.row < maxRow) {
             coordinates.add(Coor(position.row + 1, position.col))
         }
-        if (position.col > minCol) {
-            coordinates.add(Coor(position.row, position.col - 1))
-        }
         if (position.col < maxCol) {
             coordinates.add(Coor(position.row, position.col + 1))
+        }
+        if (position.row > minRow) {
+            coordinates.add(Coor(position.row - 1, position.col))
+        }
+        if (position.col > minCol) {
+            coordinates.add(Coor(position.row, position.col - 1))
         }
 
         return grid.filter { it.key in coordinates }
