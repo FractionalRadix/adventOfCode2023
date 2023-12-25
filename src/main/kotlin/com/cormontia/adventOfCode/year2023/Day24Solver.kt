@@ -27,7 +27,8 @@ class Day24Solver {
         //    print(it)
         //}
 
-        val crossings = solvePart1(hailstones, 7,27, 7, 27)
+        // 200000000000000 and at most 400000000000000
+        val crossings = solvePart1(hailstones, 200000000000000,400000000000000, 200000000000000, 400000000000000)
 
     }
 
@@ -70,9 +71,10 @@ class Day24Solver {
                 //    a1 * x + b1 = a2 * x + b2
                 //    a1 * x - a2 * x + b1 = b2
                 //    a1 * x - a2 * x  = b2 - b1
-                //    x * (a1 - a2) = b2 - b1
+                //    x * (a1 - a2 ) = b2 - b1
                 //    x = (b2 - b1) / (a2 - a1)
                 //  Given that, if necessary we can still determine the corresponding value of y.
+
 
 
                 val a1 = h1.vy.toDouble() / h1.vx.toDouble()
@@ -83,13 +85,23 @@ class Day24Solver {
 
                 println("$a1 * x + $b1   $a2 * x + $b2")
 
-                val x = (b2 - b1) / (a2 - a1)
-                //if (x >= minX && x <= maxX) {
+                val x = (b2 - b1) / (a1 - a2)
+                if (x >= minX && x <= maxX) {
                     val y = a1 * x + b1
-                    //if (y >= minY && y <= maxY) {
+                    if (y >= minY && y <= maxY) {
                         println("Crossing within boundaries: ($x, $y).")
-                    //}
-                //}
+                        // Solve for t in x(t) = px0 + t * vx0
+                        //   x(t) - px0 = t * vx0
+                        //   t = (x(t) - px0) / vx0
+                        val t1 = (x - h1.px.toDouble()) / h1.vx.toDouble()
+                        val t2 = (x - h2.px.toDouble()) / h2.vx.toDouble()
+                        if (t1 >= 0) {
+                            println("Gotcha!")
+                        } else {
+                            println("...crossed in the past.")
+                        }
+                    }
+                }
 
 
             }
