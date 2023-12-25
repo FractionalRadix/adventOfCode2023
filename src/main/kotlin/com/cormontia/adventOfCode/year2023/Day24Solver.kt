@@ -6,9 +6,6 @@ import kotlin.io.path.readLines
 
 class Day24Solver {
 
-    // First start reading assignment: 08.45 (few minutes earlier?)
-
-
     fun solve() {
         val input = Path("""src/main/resources/inputFiles/AoCDay24_sample1.txt""")
             .readLines()
@@ -23,20 +20,16 @@ class Day24Solver {
             Hailstone(position[0], position[1], position[2], velocity[0], velocity[1], velocity[2])
         }
 
-        //hailstones.forEach {
-        //    print(it)
-        //}
-
+        val crossings = solvePart1(hailstones, 7,27, 7, 27)
         // 200000000000000 and at most 400000000000000
-        val crossings = solvePart1(hailstones, 200000000000000,400000000000000, 200000000000000, 400000000000000)
-
+        //val crossings = solvePart1(hailstones, 200000000000000,400000000000000, 200000000000000, 400000000000000)
+        println("Nr of crossings within boundaries, at or after t=0: $crossings .")
     }
 
-    fun solvePart1(hailstones: List<Hailstone>, minX: Long, maxX: Long, minY: Long, maxY: Long) {
+    fun solvePart1(hailstones: List<Hailstone>, minX: Long, maxX: Long, minY: Long, maxY: Long): Long {
+        var nrOfCrossings = 0L
         for (i1 in hailstones.indices) {
             for (i2 in i1 + 1 ..< hailstones.size) {
-
-                println("Comparing: $i1, $i2.")
 
                 val h1 = hailstones[i1]
                 val h2 = hailstones[i2]
@@ -75,15 +68,11 @@ class Day24Solver {
                 //    x = (b2 - b1) / (a2 - a1)
                 //  Given that, if necessary we can still determine the corresponding value of y.
 
-
-
                 val a1 = h1.vy.toDouble() / h1.vx.toDouble()
                 val b1 = h1.py - a1 * h1.px
 
                 val a2 = h2.vy.toDouble() / h2.vx.toDouble()
                 val b2 = h2.py - a2 * h2.px
-
-                println("$a1 * x + $b1   $a2 * x + $b2")
 
                 val x = (b2 - b1) / (a1 - a2)
                 if (x >= minX && x <= maxX) {
@@ -95,18 +84,17 @@ class Day24Solver {
                         //   t = (x(t) - px0) / vx0
                         val t1 = (x - h1.px.toDouble()) / h1.vx.toDouble()
                         val t2 = (x - h2.px.toDouble()) / h2.vx.toDouble()
-                        if (t1 >= 0) {
+                        if (t1 >= 0 && t2 > 0) {
                             println("Gotcha!")
+                            nrOfCrossings++
                         } else {
-                            println("...crossed in the past.")
+                            println("...crossed in the past. ($t1, $t2)")
                         }
                     }
                 }
-
-
             }
         }
-
+        return nrOfCrossings
     }
 
     data class Hailstone(
