@@ -25,8 +25,6 @@ class Day23Solver {
         // The recursive solution caused a stack overflow.
         // Let's try an iterative solution, where we keep track of the stack ourselves.
 
-        data class State(val pos: Coor, val visited: List<Coor>)
-
         // Determine the starting point.
         val firstRow = grid.grid.filter { it.key.row == grid.minRow }
         val firstColIdx = firstRow.filter { it.value == '.' }.minBy { it.key.col }.key.col
@@ -37,11 +35,8 @@ class Day23Solver {
         val lastColIdx = lastRow.filter { it.value == '.' }.maxBy { it.key.col }.key.col
         val lastPos = Coor(grid.maxRow, lastColIdx)
 
-        //val goal = lastPos // No need to put this in the State class...
-        //val pathLengths = mutableListOf<Int>() // again, no need to put this in the State class...
-
         val paths = findPaths(grid, firstPos, lastPos)
-        return paths.map { it.tiles.size }.max()
+        return paths.maxOf { it.tiles.size }
     }
 
     data class Path(val tiles: List<Coor>)
