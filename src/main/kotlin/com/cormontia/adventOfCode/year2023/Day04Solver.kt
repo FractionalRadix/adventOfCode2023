@@ -45,7 +45,7 @@ class Day04Solver {
                 }
                 cards.remove(currentCard)
             }
-            println(cards.size)
+            //println(cards.size)
         } while (cards.isNotEmpty())
         println(total)
 
@@ -69,10 +69,9 @@ class Day04Solver {
                 }
             }
         }
-
         TODO()
-
     }
+
     class Card(val nr: Int, private val numbers: List<Int>, private val winningNumbers: List<Int>) {
         fun value(): Int {
             val nrOfWinningNumbers = getNrOfWinningNumbers()

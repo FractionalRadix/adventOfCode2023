@@ -14,13 +14,13 @@ class Day03Solver {
             .filter { str -> str.isNotEmpty() }
 
         val solutionPart1 = solveDay03Part1(firstInputAsStrings)
-        println("The sum of part numbers is $solutionPart1 .")
+        println("The sum of part numbers is $solutionPart1.")
 
         val solutionPart2 = solveDay03Part2(firstInputAsStrings)
-        println("The sum of gear ratios is $solutionPart2 .")
+        println("The sum of gear ratios is $solutionPart2.")
     }
 
-    fun solveDay03Part2(inputStrings: List<String>): Int {
+    private fun solveDay03Part2(inputStrings: List<String>): Int {
 
         data class Component(
             val value: Int,
@@ -68,10 +68,8 @@ class Day03Solver {
 
         return sum
     }
-
     private fun solveDay03Part1(
         inputStrings: List<String>,
-        //map: MutableMap<com.cormontia.adventOfCode.year2023.utils.Coor, Char>,
     ): Int {
         val map = buildGridMap(inputStrings)
         var sum = 0

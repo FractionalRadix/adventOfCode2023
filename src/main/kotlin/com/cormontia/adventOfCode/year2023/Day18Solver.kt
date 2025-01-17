@@ -1,6 +1,7 @@
 package com.cormontia.adventOfCode.year2023
 
 import utils.Direction
+import java.awt.Rectangle
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
 import kotlin.math.abs
@@ -15,6 +16,49 @@ class Day18Solver {
     }
 
     private fun solvePart2(input: List<String>) {
+        val commands = buildCommandListPart2(input)
+
+        //TODO!~ You just need to keep track of the lines.
+        // No need to map every border '#' individually!
+        val map = buildMapFromInstructions(commands)
+
+        val minX = map.keys.minBy { it.x }.x
+        val maxX = map.keys.maxBy { it.x }.x
+        val minY = map.keys.minBy { it.y }.y
+        val maxY = map.keys.maxBy { it.y }.y
+
+        val mapSize = abs(maxX - minX) * abs(maxY - minY)
+        println("Map size: $mapSize.") // 1407374123584  for the sample input.
+
+        //TODO!+ First, let's find the smallest rectangle that surrounds the lagoon.
+        // This is found by finding the outermost edges (lowest x, lowest y, highest x, highest y).
+        // This is an upper bound on the size of the lagoon.
+        // Next, we split the lagoon by the horizontal and vertical lines. This leaves us with a set of rectangles.
+        // What remains to be done, is to determine which of these rectangles are INSIDE, and which are OUTSIDE the lagoon.
+        // In other words, which of these rectangles are part of the lagoon, and which are not.
+
+        data class Rect(val x0: Long, val y0: Long, val x1: Long, val y1: Long)
+        val rectangles = mutableListOf<Rect>()
+        val xValues = map.keys.map { it.x }.zipWithNext()
+        println("Nr of x values: ${xValues.size}")
+        val yValues = map.keys.map { it.y }.zipWithNext()
+        println("Nr of y values: ${yValues.size}.")
+        for (x in xValues) {
+            for (y in yValues) {
+                val rect = Rect(x.first, y.first, x.second, y.second)
+                rectangles.add(rect)
+            }
+        }
+
+        println("Nr of rectangles: ${rectangles.size}")
+        //rectangles.forEach { println(it) }
+
+        //TODO!+ Determine which of these rectangles are inside the lagoon.
+        // Also, consider that the border rows/columns of the lagoon may have been counted twice!!
+    }
+
+
+    private fun solvePart2_naive(input: List<String>) {
         val commands = buildCommandListPart2(input)
 
         val map = buildMapFromInstructions(commands)

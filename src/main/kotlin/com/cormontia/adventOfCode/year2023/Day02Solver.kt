@@ -13,21 +13,21 @@ class Day02Solver {
         // Solve the first part.
         var sumPart1 = 0
         games.forEach {
-                game -> if (game.isPossible(maxRed = 12, maxGreen = 13, maxBlue = 14)) {
-            sumPart1 += game.gameNr
-        }
+            game -> if (game.isPossible(maxRed = 12, maxGreen = 13, maxBlue = 14)) {
+                sumPart1 += game.gameNr
+            }
         }
         println("The sum of possible games is: $sumPart1")
 
         // Solve the second part.
         var sumPart2 = 0
         games.forEach {
-                game -> sumPart2 += game.power()
+            game -> sumPart2 += game.power()
         }
         println("The sum of powers of the minimal sets of cubes is: $sumPart2")
     }
 
-    fun parseDay02(inputLines: List<String>): List<Game> {
+    private fun parseDay02(inputLines: List<String>): List<Game> {
         val games = mutableListOf<Game>()
         for (i in 1 .. inputLines.size) {
             val game = Game(i)

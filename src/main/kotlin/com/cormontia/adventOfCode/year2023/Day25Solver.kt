@@ -14,6 +14,33 @@ class Day25Solver {
 
         graph.print()
 
+        // Find all pairs of vertices.
+        val vertexPairs = vertexPairs(graph)
+
+        //TODO!+ Find the vertex pairs with at most 3 paths between them.
+
+    }
+
+    /**
+     * Given a graph, find all possible pairs of distinct vertices (whether connected or not).
+     * For example, the graph (A->B, A->C, B) would return [{A,B}, {A,C}, {B,C}].
+     * Note that in this example {A,A}, {B,B}, and {C,C} are kept out: their vertices are the same, not distinct.
+     * Also note that in this example {A,B} and {B,C} are included even though B is not connected to any other vertex.
+     * It's the presence of the vertex that we're looking for here, NOT what it is connected to.
+     * @param graph A graph.
+     * @return A list of all pairs of distinct vertices.
+     */
+    private fun vertexPairs(graph: Graph): List<Set<String>> {
+        val vertexPairs = mutableListOf<Set<String>>()
+        val vertices = graph.map.keys
+        for (v1 in vertices) {
+            for (v2 in vertices) {
+                if (v1 != v2) {
+                    vertexPairs.add(setOf(v1, v2))
+                }
+            }
+        }
+        return vertexPairs
     }
 
     private fun parseGraph(input: List<String>): Graph {

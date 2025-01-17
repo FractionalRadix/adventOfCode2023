@@ -10,13 +10,13 @@ import kotlin.math.max
 
 class Day23Solver {
     fun solve() {
-        val input = Path("""src/main/resources/inputFiles/AoCDay23_sample1.txt""")
+        val input = Path("""src/main/resources/inputFiles/AoCDay23.txt""")
             .readLines()
 
         val grid = Grid(buildGridMap(input))
 
-        val solution1 = solvePart1(grid)
-        println("The longest path has $solution1 steps.")
+        //val solution1 = solvePart1(grid)
+        //println("The longest path has $solution1 steps.")
 
         val solution2 = solvePart2(grid)
         println("The longest path without the 'steep slope' rule has $solution2 steps.")

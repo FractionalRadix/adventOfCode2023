@@ -24,7 +24,7 @@ class Day01Solver {
         println("Answer for the second part: $values2") // 54706
     }
 
-    fun calibrationValue(str: String): Int {
+    private fun calibrationValue(str: String): Int {
         val firstDigit = str
             .first { ch -> ch.isDigit() }
             .digitToInt()
@@ -34,12 +34,13 @@ class Day01Solver {
         return ( 10 * firstDigit + lastDigit )
     }
 
-    /** Get the first digit from a string, whether it is spelled out or just given as a digit.
+    /**
+     * Get the first digit from a string, whether it is spelled out or just given as a digit.
      * Naive but functional solution.
      * @param str A String that contains at least one digit, either as a digit or spelled out in letters.
      * @return The value of the first digit in the input.
      */
-    fun firstWordOrDigit(str: String): Int {
+    private fun firstWordOrDigit(str: String): Int {
         if (str.startsWith("zero") or str.startsWith("0"))
             return 0
 
@@ -67,12 +68,13 @@ class Day01Solver {
         return firstWordOrDigit(str.substring(1))
     }
 
-    /** Get the last digit from a string, whether it is spelled out or just given as a digit.
+    /**
+     * Get the last digit from a string, whether it is spelled out or just given as a digit.
      * Naive but functional solution.
      * @param str A String that contains at least one digit, either as a digit or spelled out in letters.
      * @return The value of the last digit in the input.
      */
-    fun lastWordOrDigit(str: String): Int {
+    private fun lastWordOrDigit(str: String): Int {
         if (str.endsWith("zero") or str.endsWith("0"))
             return 0
 
